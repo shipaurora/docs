@@ -7485,16 +7485,16 @@
         },
         {
             "name": "shipaurora/borealis-theme",
-            "version": "v1.0.0",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/borealis-theme.git",
-                "reference": "eb280a98446ebfcbc193b3b8f810eac0948591a0"
+                "reference": "bece904f6c13f7e7348c7259505ae0a68816b6f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/borealis-theme/zipball/eb280a98446ebfcbc193b3b8f810eac0948591a0",
-                "reference": "eb280a98446ebfcbc193b3b8f810eac0948591a0",
+                "url": "https://api.github.com/repos/shipaurora/borealis-theme/zipball/bece904f6c13f7e7348c7259505ae0a68816b6f3",
+                "reference": "bece904f6c13f7e7348c7259505ae0a68816b6f3",
                 "shasum": ""
             },
             "require": {
@@ -7508,6 +7508,9 @@
                     "providers": [
                         "Aurora\\Borealis\\ThemeServiceProvider"
                     ]
+                },
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
                 }
             },
             "autoload": {
@@ -7543,20 +7546,20 @@
                 "issues": "https://github.com/shipaurora/borealis-theme/issues",
                 "source": "https://github.com/shipaurora/borealis-theme"
             },
-            "time": "2026-10-20T10:41:12+00:00"
+            "time": "2026-10-20T12:09:38+00:00"
         },
         {
             "name": "shipaurora/cms",
-            "version": "v1.0.0",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/cms.git",
-                "reference": "8375e4afef6d5545d31d85b76d3f98ea67d49efa"
+                "reference": "1609bd3b244dab5e0eb75d0bb48cbfd17d26aa8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/cms/zipball/8375e4afef6d5545d31d85b76d3f98ea67d49efa",
-                "reference": "8375e4afef6d5545d31d85b76d3f98ea67d49efa",
+                "url": "https://api.github.com/repos/shipaurora/cms/zipball/1609bd3b244dab5e0eb75d0bb48cbfd17d26aa8c",
+                "reference": "1609bd3b244dab5e0eb75d0bb48cbfd17d26aa8c",
                 "shasum": ""
             },
             "require": {
@@ -7645,20 +7648,20 @@
                 "issues": "https://github.com/shipaurora/cms/issues",
                 "source": "https://github.com/shipaurora/cms"
             },
-            "time": "2026-10-20T11:30:51+00:00"
+            "time": "2026-10-20T12:09:33+00:00"
         },
         {
             "name": "shipaurora/minimal-theme",
-            "version": "v1.0.0",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/minimal-theme.git",
-                "reference": "41549d2f16966214fd0197de19bc7262f2dda174"
+                "reference": "63f4c72a369eb88c73062acd3c942e20fd42d3f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/minimal-theme/zipball/41549d2f16966214fd0197de19bc7262f2dda174",
-                "reference": "41549d2f16966214fd0197de19bc7262f2dda174",
+                "url": "https://api.github.com/repos/shipaurora/minimal-theme/zipball/63f4c72a369eb88c73062acd3c942e20fd42d3f0",
+                "reference": "63f4c72a369eb88c73062acd3c942e20fd42d3f0",
                 "shasum": ""
             },
             "require": {
@@ -7672,6 +7675,9 @@
                     "providers": [
                         "Aurora\\Minimal\\ThemeServiceProvider"
                     ]
+                },
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
                 }
             },
             "autoload": {
@@ -7708,7 +7714,7 @@
                 "issues": "https://github.com/shipaurora/minimal-theme/issues",
                 "source": "https://github.com/shipaurora/minimal-theme"
             },
-            "time": "2026-10-20T10:37:14+00:00"
+            "time": "2026-10-20T12:09:42+00:00"
         },
         {
             "name": "spatie/image",
