@@ -28,6 +28,12 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         foreach (self::USERS as [$name, $email, $role, $title, $avatar, $locale]) {
+            // Seeding again leaves an account alone: its password, passkeys, authenticator app
+            // and role are its owner's.
+            if (User::query()->where('email', $email)->exists()) {
+                continue;
+            }
+
             // Portraits in seeders/images/avatars are for people only (the rest of seeders/images
             // goes into the media library); without one, the person is shown with their initials.
             $source = __DIR__.'/images/'.$avatar;
@@ -37,7 +43,8 @@ class UserSeeder extends Seeder
                 Storage::disk('public')->put($avatar, file_get_contents($source));
             }
 
-            $user = User::query()->updateOrCreate(['email' => $email], [
+            $user = User::query()->create([
+                'email' => $email,
                 'name' => $name,
                 'password' => 'password',
                 'job_title' => $title,

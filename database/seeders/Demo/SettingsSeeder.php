@@ -48,6 +48,11 @@ class SettingsSeeder extends Seeder
             ['Mobile app', [ApiScope::PagesList, ApiScope::PagesRead, ApiScope::MediaRead, ApiScope::MenusRead], 2],
             ['Website search widget', [ApiScope::Search], 30],
         ] as [$name, $scopes, $hoursAgo]) {
+            // Seeding again keeps a key that's there: whatever uses it keeps working.
+            if (ApiKey::query()->where('name', $name)->exists()) {
+                continue;
+            }
+
             $key = 'aurora_'.Str::random(40);
 
             ApiKey::query()->create([
@@ -61,8 +66,7 @@ class SettingsSeeder extends Seeder
         }
 
         // Told when pages go live, so the mobile app can refresh.
-        Webhook::query()->create([
-            'url' => 'https://hooks.example.com/aurora/rebuild-app',
+        Webhook::query()->updateOrCreate(['url' => 'https://hooks.example.com/aurora/rebuild-app'], [
             'events' => ['page.published', 'page.unpublished'],
             'is_active' => true,
             'last_status' => 200,

@@ -139,9 +139,8 @@ class PageSeeder extends Seeder
             'icon' => 'phosphor-sparkle',
             'view' => 'layouts.landing',
         ]);
-        Layout::query()->create([
+        Layout::query()->updateOrCreate(['handle' => 'docs'], [
             'name' => 'Docs',
-            'handle' => 'docs',
             'description' => 'The docs menu beside the page, for documentation.',
             'icon' => 'phosphor-book-open-text',
             'view' => 'layouts.docs',
@@ -274,6 +273,10 @@ class PageSeeder extends Seeder
             ['add_block', 'Added a code sample to "Home"', $home, 179],
             ['seo_report', 'Checked the SEO of 31 pages', null, 60],
         ] as [$tool, $summary, $subject, $minutesAgo]) {
+            // Seeding again replaces these samples (they point at the pages made this time) and
+            // leaves real activity alone.
+            McpActivity::query()->where('tool', $tool)->where('summary', $summary)->delete();
+
             McpActivity::query()->create([
                 'user_id' => $admin?->id,
                 'channel' => AiChannel::Mcp,
@@ -432,8 +435,8 @@ class PageSeeder extends Seeder
 
     protected function createContactForm(): Form
     {
-        $form = Form::query()->create([
-            'name' => 'Contact',
+        // Updated in place when seeding again: what visitors sent through it stays.
+        $form = Form::query()->updateOrCreate(['name' => 'Contact'], [
             'submit_label' => 'Send message',
             'success_message' => 'Thanks! We reply within one working day.',
             'notify' => ['hello@aurora.test'],

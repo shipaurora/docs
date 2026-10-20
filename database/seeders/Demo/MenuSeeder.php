@@ -34,7 +34,7 @@ class MenuSeeder extends Seeder
 
         // The docs layout's sidebar (resources/views/layouts/docs.blade.php): each section and
         // its pages, in reading order. Editors reorder the docs by dragging these items.
-        NavigationLocation::query()->create(['handle' => 'docs', 'name' => 'Docs sidebar', 'description' => 'Beside every page in the Docs layout.', 'sort' => 4]);
+        NavigationLocation::query()->updateOrCreate(['handle' => 'docs'], ['name' => 'Docs sidebar', 'description' => 'Beside every page in the Docs layout.', 'sort' => 4]);
 
         $this->menu('Docs', 'docs', array_map(
             fn (string $section, array $docs): array => ['page' => $section, 'children' => array_map(fn (string $slug): array => ['page' => $slug], array_keys($docs[2]))],
@@ -49,7 +49,7 @@ class MenuSeeder extends Seeder
         ], $pages);
 
         // The small links at the very bottom of this website's footer.
-        NavigationLocation::query()->create(['handle' => 'legal', 'name' => 'Footer: legal links', 'description' => 'The small links at the very bottom.', 'sort' => 3]);
+        NavigationLocation::query()->updateOrCreate(['handle' => 'legal'], ['name' => 'Footer: legal links', 'description' => 'The small links at the very bottom.', 'sort' => 3]);
 
         $this->menu('Legal', 'legal', [
             ['page' => 'privacy'],

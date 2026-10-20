@@ -2,16 +2,17 @@
 
 namespace Database\Seeders;
 
-use Database\Seeders\Demo\DemoSeeder;
+use Database\Seeders\Demo\DocsSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     /**
-     * This site is Aurora's demo: its content comes with the package.
+     * This website's content (DocsSeeder). Run it again on a deploy (php artisan db:seed --force)
+     * to replace the content with what's in the code; the accounts stay as they are.
      */
     public function run(): void
     {
-        $this->call(DemoSeeder::class);
+        $this->call(DocsSeeder::class);
     }
 }
