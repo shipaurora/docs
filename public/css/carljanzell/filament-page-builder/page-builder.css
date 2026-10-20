@@ -1,0 +1,1023 @@
+/*
+ * Chrome for the page builder canvas.
+ *
+ * Everything is scoped under .fpb so the panel's styles and the consuming application's
+ * block styles cannot bleed into one another. The application supplies its own block
+ * styling; this file only styles the builder around it — plus the shipped primitives
+ * and the token attributes, so a section dropped onto an empty page already looks like
+ * a page, not a wireframe.
+ */
+.fpb {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr) 20rem;
+    transition: grid-template-columns 0.2s ease;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0;
+    align-items: stretch;
+    height: 100dvh;
+    min-height: 100dvh;
+    background: var(--fpb-editor-bg, #f4f4f5);
+}
+
+/*
+ * The chrome follows the panel's theme.
+ *
+ * Text colour is inherited from Filament on purpose, so it is already right in either
+ * mode — but the panels hardcoded a light background, which put Filament's white dark
+ * mode text on white and made the palette, the inspector and the toolbar unreadable.
+ * Only the backgrounds need a dark value; the borders and tab strips are grey with an
+ * alpha and read on both.
+ *
+ * Declared on .fpb rather than :root so an application setting these on :root still
+ * wins in light mode, which is the extension point these variables already were.
+ */
+.fpb[data-wide="true"] { grid-template-columns: 16rem minmax(0, 1fr) 32rem; }
+
+html.dark .fpb {
+    --fpb-editor-bg: #18181b;
+    --fpb-panel-bg: #27272a;
+    --fpb-raised-bg: #3f3f46;
+}
+
+.fpb-chrome {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.22);
+    background: var(--fpb-panel-bg, #fff);
+    z-index: 3;
+}
+
+.fpb-chrome-start {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.fpb-back {
+    flex: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.7;
+}
+.fpb-back:hover { opacity: 1; }
+
+.fpb-chrome-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 650;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fpb-panel {
+    padding: 1rem;
+    background: var(--fpb-panel-bg, #fff);
+    overflow-y: auto;
+    min-height: 0;
+}
+.fpb-palette { border-right: 1px solid rgba(128, 128, 128, 0.22); }
+.fpb-inspector { border-left: 1px solid rgba(128, 128, 128, 0.22); }
+
+.fpb-panel-title { font-weight: 600; margin-bottom: 0.25rem; }
+.fpb-panel-hint { font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.75rem; }
+
+.fpb-side-tabs,
+.fpb-inspector-tabs {
+    display: flex; gap: 0.25rem; margin-bottom: 0.75rem;
+    padding: 0.15rem; border-radius: 0.5rem;
+    background: rgba(128, 128, 128, 0.08);
+}
+.fpb-side-tab {
+    flex: 1; padding: 0.35rem 0.5rem; border: 0; border-radius: 0.375rem;
+    background: transparent; font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; color: inherit; opacity: 0.65;
+}
+.fpb-side-tab[data-active="true"] { background: var(--fpb-raised-bg, #fff); opacity: 1; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+
+.fpb-palette-group {
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em;
+    opacity: 0.55; font-weight: 600; margin: 0.85rem 0 0.35rem;
+}
+.fpb-palette-group:first-child { margin-top: 0; }
+
+.fpb-palette-list { display: grid; gap: 0.375rem; list-style: none; padding: 0; margin: 0; }
+.fpb-palette-item {
+    display: flex; align-items: center; gap: 0.5rem; width: 100%;
+    padding: 0.5rem 0.625rem; cursor: grab; text-align: left;
+    border: 1px solid rgba(128, 128, 128, 0.25); border-radius: 0.5rem;
+    font-size: 0.85rem; background: transparent;
+}
+.fpb-palette-item {
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.fpb-palette-item:hover {
+    border-color: #2563eb;
+    background: rgba(37, 99, 235, 0.06);
+    box-shadow: 0 1px 6px rgba(37, 99, 235, 0.12);
+}
+.fpb-palette-item:active { cursor: grabbing; }
+.fpb-palette-icon { width: 1rem; height: 1rem; flex: none; }
+
+.fpb-structure { list-style: none; padding: 0; margin: 0; }
+.fpb-structure .fpb-structure { margin-left: 0.6rem; border-left: 1px solid rgba(128, 128, 128, 0.2); }
+.fpb-structure-btn {
+    display: block; width: 100%; text-align: left; padding: 0.28rem 0.45rem;
+    border: 0; background: transparent; border-radius: 0.35rem;
+    font-size: 0.8rem; cursor: pointer; color: inherit;
+}
+.fpb-structure-btn:hover { background: rgba(37, 99, 235, 0.08); }
+.fpb-structure-btn[data-selected="true"] { background: rgba(37, 99, 235, 0.14); font-weight: 600; }
+
+.fpb-shortcuts {
+    display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.6rem;
+    margin: 1rem 0 0; padding-top: 0.75rem; font-size: 0.7rem; opacity: 0.6;
+    border-top: 1px solid rgba(128, 128, 128, 0.2);
+}
+.fpb-shortcuts dt { font-family: ui-monospace, monospace; white-space: nowrap; }
+.fpb-shortcuts dd { margin: 0; }
+
+.fpb-canvas-wrap {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.fpb-toolbar-actions { display: flex; align-items: center; gap: 0.5rem; flex: none; }
+.fpb-status { font-size: 0.8rem; opacity: 0.7; }
+.fpb-status-dirty { opacity: 1; font-weight: 600; }
+
+.fpb-preview-toggle {
+    display: flex; gap: 0.15rem; padding: 0.15rem; border-radius: 0.5rem;
+    background: rgba(128, 128, 128, 0.08);
+}
+.fpb-preview-btn {
+    padding: 0.3rem 0.55rem; border: 0; border-radius: 0.375rem;
+    background: transparent; font-size: 0.72rem; font-weight: 600;
+    cursor: pointer; color: inherit; opacity: 0.65;
+}
+.fpb-preview-btn[data-active="true"] { background: var(--fpb-raised-bg, #fff); opacity: 1; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+
+/*
+ * The canvas scroller.
+ *
+ * `align-items: flex-start` is load-bearing: the frame has a definite height, so the
+ * default `stretch` pinned the canvas to that height. With `overflow: hidden` on the
+ * canvas, a page taller than the viewport was clipped rather than scrolled, and the
+ * editor had no vertical scroll at all. Starting the canvas at the top lets it take
+ * its content height, and `min-height: 100%` still fills the frame on a short page.
+ */
+.fpb-canvas-frame {
+    position: relative;
+    display: flex; justify-content: center; align-items: flex-start;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 1.25rem;
+    background: rgba(128, 128, 128, 0.06);
+}
+
+.fpb-canvas {
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    min-height: 100%;
+    background: var(--fpb-canvas-bg, #fff);
+    color: var(--fpb-canvas-fg, #111827);
+    width: 100%;
+    container-type: inline-size;
+    container-name: fpb-canvas;
+    transition: max-width 0.2s ease;
+    box-shadow: 0 1px 8px rgba(15, 23, 42, 0.04);
+}
+.fpb-canvas[data-preview="tablet"] { max-width: 768px; }
+.fpb-canvas[data-preview="mobile"] { max-width: 390px; }
+
+.fpb-block { position: relative; transition: opacity 0.15s ease; }
+.fpb-block[data-dragging="true"] { opacity: 0.4; }
+.fpb-block::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    outline: 2px solid transparent; outline-offset: -2px; transition: outline-color 0.15s;
+}
+.fpb-block:hover::after { outline-color: rgba(120, 120, 120, 0.5); }
+.fpb-block[data-selected="true"]::after { outline-color: #2563eb; }
+
+/*
+ * The bar runs along the block's top edge, but only its pills catch the pointer. A
+ * full-width strip covered the first line of every selected block, so a click there
+ * reselected the block instead of landing the caret. Between the pills it now falls
+ * through to the text, and the text shows through.
+ */
+.fpb-block-bar {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+    display: flex; align-items: center; gap: 0.25rem;
+    padding: 0.2rem; font-size: 0.7rem; color: #fff;
+    opacity: 0; transition: opacity 0.15s;
+    pointer-events: none;
+}
+.fpb-block:hover > .fpb-block-bar,
+.fpb-block[data-selected="true"] > .fpb-block-bar { opacity: 1; }
+.fpb-block-bar > .fpb-block-handle,
+.fpb-block-bar > .fpb-block-label,
+.fpb-block-bar > .fpb-block-quick,
+.fpb-block-bar > .fpb-block-tools {
+    pointer-events: auto;
+    min-height: 1.3rem;
+    background: rgba(17, 17, 17, 0.8);
+    border-radius: 0.3rem;
+}
+.fpb-block-handle {
+    cursor: grab; color: #fff; border: 0;
+    padding: 0 0.15rem 0 0.3rem; letter-spacing: -0.12em; font-size: 0.85rem; line-height: 1;
+}
+.fpb-block-handle:active { cursor: grabbing; }
+/* The handle and the label read as one pill. */
+.fpb-block-bar > .fpb-block-handle { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.fpb-block-label {
+    display: inline-flex; align-items: center; padding: 0 0.45rem 0 0.2rem;
+    text-transform: uppercase; letter-spacing: 0.04em; margin: 0 auto 0 -0.25rem;
+    border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important;
+}
+.fpb-block-tools { display: flex; align-items: center; gap: 0.1rem; padding: 0 0.2rem; }
+.fpb-block-tools button { color: #fff; padding: 0 0.2rem; cursor: pointer; background: none; border: 0; }
+.fpb-block-tools button:hover { color: #fca5a5; }
+.fpb-block-edit {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 0 0.35rem;
+}
+
+.fpb-block-body { pointer-events: none; }
+
+/* Fields a block has opened for editing in place. The body swallows pointer events so a
+   click selects the block; an editable takes them back so a click lands a caret. Slots
+   take them back so a drop can land inside a column. */
+.fpb-block-body [data-fpb-field] {
+    pointer-events: auto; cursor: text; border-radius: 0.125rem;
+    outline: 1px dashed transparent; outline-offset: 2px; transition: outline-color 0.15s;
+}
+.fpb-block-body [data-fpb-field]:hover { outline-color: rgba(37, 99, 235, 0.45); }
+.fpb-block-body [data-fpb-field]:focus { outline: 2px solid #2563eb; }
+.fpb-block-body [data-fpb-field]:empty::before {
+    content: attr(data-fpb-placeholder); opacity: 0.45; pointer-events: none;
+}
+
+.fpb-block[data-unknown="true"] { background: repeating-linear-gradient(45deg, rgba(128,128,128,0.05) 0 8px, transparent 8px 16px); }
+.fpb-block-retired { padding: 1.5rem 1rem; text-align: center; font-size: 0.8rem; opacity: 0.7; }
+.fpb-block-retired code { font-family: ui-monospace, monospace; }
+
+.fpb-section {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    box-sizing: border-box;
+}
+.fpb-section[data-fpb-ratio="1"] { grid-template-columns: 1fr; }
+.fpb-section[data-fpb-ratio="1-1"] { grid-template-columns: 1fr 1fr; }
+.fpb-section[data-fpb-ratio="1-2"] { grid-template-columns: 1fr 2fr; }
+.fpb-section[data-fpb-ratio="2-1"] { grid-template-columns: 2fr 1fr; }
+.fpb-section[data-fpb-ratio="1-1-1"] { grid-template-columns: 1fr 1fr 1fr; }
+.fpb-section[data-fpb-ratio="1-2-1"] { grid-template-columns: 1fr 2fr 1fr; }
+.fpb-section[data-fpb-ratio="1-1-1-1"] { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.fpb-section[data-fpb-columns="1"] { grid-template-columns: 1fr; }
+
+/*
+ * A slot is a grid cell first and a drop target second: it exists on the public page
+ * as well, where it is what keeps a column's blocks in that column.
+ */
+.fpb-slot {
+    pointer-events: auto;
+    min-width: 0;
+}
+body.fpb-edit-mode .fpb-slot {
+    min-height: 4.5rem;
+    border: 1px dashed rgba(37, 99, 235, 0.28);
+    border-radius: 0.4rem;
+    background: rgba(37, 99, 235, 0.03);
+    transition: border-color 0.15s, background 0.15s;
+}
+body.fpb-edit-mode .fpb-slot[data-drop-active="true"] {
+    border-color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
+}
+.fpb-slot-empty {
+    margin: 0; padding: 1.25rem 0.75rem;
+    text-align: center; font-size: 0.78rem; opacity: 0.55;
+}
+
+/*
+ * The ring that blooms out of a block when it arrives or moves.
+ *
+ * A throwaway overlay, added and removed by the script, so it can sit over the block's
+ * own content without the block's styles having to make room for it, and so two flashes
+ * in quick succession cannot fight over the same property.
+ */
+.fpb-flash {
+    position: absolute; z-index: 1; pointer-events: none; opacity: 0;
+    /*
+     * Drawn a few pixels outside the block, not over it. A divider or a spacer is one
+     * or two pixels tall, and a ring confined to its own box would be invisible on
+     * exactly the blocks whose arrival is hardest to spot.
+     */
+    inset: -6px;
+    border-radius: 0.4rem;
+    outline: 2px solid #2563eb;
+    background: rgba(37, 99, 235, 0.07);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16), 0 8px 26px rgba(37, 99, 235, 0.22);
+}
+.fpb-flash[data-tone="danger"] {
+    outline-color: #dc2626;
+    background: rgba(220, 38, 38, 0.07);
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.16);
+}
+
+.fpb-empty { padding: 3rem 1rem; text-align: center; font-size: 0.9rem; }
+.fpb-empty-title { margin: 0 0 0.35rem; font-weight: 650; }
+.fpb-empty-copy { margin: 0 0 1rem; opacity: 0.65; }
+.fpb-empty-copy-narrow { display: none; }
+.fpb-empty-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+/*
+ * The three buttons with a background of their own are written as button.fpb-…, one step
+ * more specific than [type="button"]. Some Filament plugins ship Tailwind's preflight
+ * unscoped, and its [type="button"] { background: initial } would otherwise win on load
+ * order and leave white text on nothing.
+ */
+button.fpb-empty-btn {
+    padding: 0.45rem 0.75rem; border-radius: 0.5rem; border: 1px solid rgba(37, 99, 235, 0.35);
+    background: rgba(37, 99, 235, 0.06); color: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+}
+
+.fpb-text { margin: 0; padding: 0.75rem 1rem; min-height: 1.4em; white-space: pre-line; }
+.fpb-button {
+    display: inline-block; margin: 0.75rem 1rem; padding: 0.5rem 1rem;
+    border-radius: 0.375rem; background: #2563eb; color: #fff; text-decoration: none;
+    min-width: 4rem; min-height: 1.2em;
+}
+.fpb-image { margin: 0; }
+.fpb-image img { display: block; width: 100%; height: auto; }
+.fpb-image-placeholder {
+    margin: 0; padding: 2.5rem 1rem; text-align: center;
+    font-size: 0.8rem; opacity: 0.55; background: rgba(128, 128, 128, 0.08);
+}
+.fpb-spacer[data-fpb-height="sm"] { height: 1rem; }
+.fpb-spacer[data-fpb-height="md"] { height: 2rem; }
+.fpb-spacer[data-fpb-height="lg"] { height: 4rem; }
+.fpb-spacer[data-fpb-height="xl"] { height: 6rem; }
+.fpb-divider { margin: 1rem; border: 0; border-top: 1px solid rgba(128, 128, 128, 0.35); }
+
+.fpb-style-field { display: grid; gap: 0.25rem; margin-bottom: 0.75rem; font-size: 0.8rem; border: 0; padding: 0; min-width: 0; }
+.fpb-style-field legend,
+.fpb-style-field > span { font-weight: 600; }
+.fpb-style-field select,
+.fpb-style-field input {
+    width: 100%; padding: 0.4rem 0.5rem; border-radius: 0.375rem;
+    border: 1px solid rgba(128, 128, 128, 0.3); background: transparent;
+    color: inherit;
+}
+html.dark .fpb-style-field select,
+html.dark .fpb-style-field input { color-scheme: dark; }
+
+.fpb-token-picks { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.fpb-token-pick {
+    padding: 0.28rem 0.5rem; border-radius: 0.375rem; border: 1px solid rgba(128, 128, 128, 0.28);
+    background: transparent; color: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer;
+}
+.fpb-token-pick[data-active="true"] {
+    border-color: #2563eb; background: rgba(37, 99, 235, 0.1);
+}
+
+.fpb-crumbs {
+    display: flex; align-items: center; gap: 0.25rem; min-width: 0;
+    font-size: 0.72rem; opacity: 0.75;
+}
+.fpb-crumb {
+    border: 0; background: transparent; color: inherit; padding: 0; cursor: pointer;
+    max-width: 8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.fpb-crumb[data-current="true"] { font-weight: 700; opacity: 1; }
+.fpb-crumb-sep { opacity: 0.5; }
+
+.fpb-search { display: block; margin-bottom: 0.75rem; }
+.fpb-search-input {
+    width: 100%; padding: 0.4rem 0.55rem; border-radius: 0.375rem;
+    border: 1px solid rgba(128, 128, 128, 0.3); background: transparent; color: inherit; font-size: 0.8rem;
+}
+.fpb-palette-copy { display: grid; gap: 0.1rem; min-width: 0; }
+.fpb-palette-desc { font-size: 0.7rem; opacity: 0.65; font-weight: 400; }
+.fpb-ghosts { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(128, 128, 128, 0.2); }
+.fpb-ghost-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; font-size: 0.8rem; }
+.fpb-ghost-list li { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.fpb-ghost-reveal {
+    border: 0; background: transparent; color: inherit; font-size: 0.72rem; font-weight: 600;
+    text-decoration: underline; cursor: pointer; opacity: 0.75;
+}
+.fpb-preview-px { opacity: 0.55; font-weight: 500; }
+.fpb-embed { position: relative; width: 100%; padding-bottom: 56.25%; }
+.fpb-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.fpb-embed-placeholder {
+    margin: 0; padding: 2.5rem 1rem; text-align: center; font-size: 0.8rem; opacity: 0.55;
+    background: rgba(128, 128, 128, 0.08);
+}
+.fpb-sr-only,
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.fpb-structure .fpb-structure-btn { padding-left: calc(0.45rem + (var(--fpb-depth, 0) * 0.15rem)); }
+
+/* Token attributes — same names on the canvas wrapper and the public .fpb-el wrapper. */
+.fpb-block[data-fpb-padding="none"] > .fpb-block-body > *,
+.fpb-el[data-fpb-padding="none"] { padding: 0; }
+.fpb-block[data-fpb-padding="sm"] > .fpb-block-body > *,
+.fpb-el[data-fpb-padding="sm"] { padding: 0.5rem; }
+.fpb-block[data-fpb-padding="md"] > .fpb-block-body > *,
+.fpb-el[data-fpb-padding="md"] { padding: 1rem; }
+.fpb-block[data-fpb-padding="lg"] > .fpb-block-body > *,
+.fpb-el[data-fpb-padding="lg"] { padding: 2rem; }
+.fpb-block[data-fpb-padding="xl"] > .fpb-block-body > *,
+.fpb-el[data-fpb-padding="xl"] { padding: 3.5rem; }
+
+.fpb-block[data-fpb-background="surface"] > .fpb-block-body,
+.fpb-el[data-fpb-background="surface"] { background: #fafafa; }
+.fpb-block[data-fpb-background="muted"] > .fpb-block-body,
+.fpb-el[data-fpb-background="muted"] { background: #f4f4f5; }
+.fpb-block[data-fpb-background="contrast"] > .fpb-block-body,
+.fpb-el[data-fpb-background="contrast"] { background: #18181b; color: #fafafa; }
+
+.fpb-block[data-fpb-width="narrow"],
+.fpb-el[data-fpb-width="narrow"] { max-width: 36rem; margin-inline: auto; }
+.fpb-block[data-fpb-width="default"],
+.fpb-el[data-fpb-width="default"] { max-width: 48rem; margin-inline: auto; }
+.fpb-block[data-fpb-width="wide"],
+.fpb-el[data-fpb-width="wide"] { max-width: 72rem; margin-inline: auto; }
+.fpb-block[data-fpb-width="full"],
+.fpb-el[data-fpb-width="full"] { max-width: none; }
+
+.fpb-block[data-fpb-align="start"] > .fpb-block-body,
+.fpb-el[data-fpb-align="start"] { text-align: start; }
+.fpb-block[data-fpb-align="center"] > .fpb-block-body,
+.fpb-el[data-fpb-align="center"] { text-align: center; }
+.fpb-block[data-fpb-align="end"] > .fpb-block-body,
+.fpb-el[data-fpb-align="end"] { text-align: end; }
+
+.fpb-page .fpb-section { padding: 0; }
+
+/* ── Shipped primitives, continued ───────────────────────────────────────── */
+
+.fpb-heading {
+    margin: 0; padding: 0.5rem 1rem; line-height: 1.2; font-weight: 700;
+    text-align: var(--fpb-text-align, inherit); white-space: pre-line; min-height: 1.2em;
+}
+.fpb-heading[data-fpb-level="h1"] { font-size: 2.5rem; }
+.fpb-heading[data-fpb-level="h2"] { font-size: 2rem; }
+.fpb-heading[data-fpb-level="h3"] { font-size: 1.6rem; }
+.fpb-heading[data-fpb-level="h4"] { font-size: 1.3rem; }
+.fpb-heading[data-fpb-level="h5"] { font-size: 1.1rem; }
+.fpb-heading[data-fpb-level="h6"] { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.fpb-list { margin: 0; padding: 0.5rem 1rem 0.5rem 2.25rem; }
+.fpb-list li + li { margin-top: 0.35rem; }
+.fpb-list[data-fpb-marker="none"] { list-style: none; padding-left: 1rem; }
+.fpb-list[data-fpb-marker="check"] { list-style: none; padding-left: 1rem; }
+.fpb-list[data-fpb-marker="check"] li { position: relative; padding-left: 1.6rem; }
+.fpb-list[data-fpb-marker="check"] li::before {
+    content: '✓'; position: absolute; left: 0; top: 0; font-weight: 700; color: var(--fpb-accent, #16a34a);
+}
+
+.fpb-quote { margin: 0; padding: 0.75rem 1rem; }
+.fpb-quote blockquote {
+    margin: 0; padding: 0.25rem 0 0.25rem 1rem; border-left: 4px solid currentColor;
+    font-size: 1.2rem; font-style: italic; line-height: 1.5; white-space: pre-line; min-height: 1.5em;
+}
+.fpb-quote figcaption { margin-top: 0.5rem; padding-left: 1rem; font-size: 0.9rem; opacity: 0.75; }
+.fpb-quote figcaption::before { content: '— '; }
+
+.fpb-video { position: relative; width: 100%; }
+.fpb-video video { display: block; width: 100%; height: auto; background: #000; }
+.fpb-video[data-fpb-ratio] video { height: 100%; object-fit: cover; }
+.fpb-video[data-fpb-ratio="16-9"] { aspect-ratio: 16 / 9; }
+.fpb-video[data-fpb-ratio="4-3"] { aspect-ratio: 4 / 3; }
+.fpb-video[data-fpb-ratio="1-1"] { aspect-ratio: 1 / 1; }
+.fpb-video[data-fpb-ratio="9-16"] { aspect-ratio: 9 / 16; max-height: 80vh; margin-inline: auto; }
+.fpb-video[data-fpb-ratio="21-9"] { aspect-ratio: 21 / 9; }
+
+.fpb-embed[data-fpb-ratio="4-3"] { padding-bottom: 75%; }
+.fpb-embed[data-fpb-ratio="1-1"] { padding-bottom: 100%; }
+.fpb-embed[data-fpb-ratio="3-4"] { padding-bottom: 133.33%; }
+.fpb-embed[data-fpb-ratio="9-16"] { padding-bottom: 177.78%; }
+.fpb-embed[data-fpb-ratio="21-9"] { padding-bottom: 42.86%; }
+.fpb-embed-note { margin: 0; padding: 0.35rem 1rem; font-size: 0.72rem; opacity: 0.6; }
+
+.fpb-image-frame { position: relative; display: block; }
+.fpb-image-overlay { position: absolute; inset: 0; pointer-events: none; }
+
+.fpb-code { position: relative; }
+.fpb-code-note, .fpb-placeholder {
+    margin: 0; padding: 0.6rem 1rem; font-size: 0.75rem; opacity: 0.6; text-align: center;
+}
+.fpb-code-note { font-family: ui-monospace, monospace; }
+.fpb-shortcode-error {
+    display: inline-block; padding: 0.1rem 0.4rem; border-radius: 0.25rem;
+    background: rgba(220, 38, 38, 0.1); color: #b91c1c; font-size: 0.8em;
+}
+
+/* The spacer on the canvas: say what it is and how tall. Invisible on the page. */
+.fpb-spacer { position: relative; }
+.fpb-block-body > .fpb-spacer {
+    background: repeating-linear-gradient(-45deg, rgba(37, 99, 235, 0.07) 0 6px, transparent 6px 12px);
+    outline: 1px dashed rgba(37, 99, 235, 0.3); outline-offset: -1px;
+}
+.fpb-spacer-label {
+    position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%);
+    padding: 0 0.4rem; border-radius: 999px; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.02em;
+    white-space: nowrap; background: rgba(255, 255, 255, 0.85); color: #1d4ed8;
+}
+.fpb-spacer[data-fpb-height="sm"] .fpb-spacer-label { display: none; }
+
+/* ── Sections: space, alignment and stacking on small screens ───────────── */
+
+.fpb-section[data-fpb-gap="none"] { gap: 0; }
+.fpb-section[data-fpb-gap="sm"] { gap: 0.5rem; }
+.fpb-section[data-fpb-gap="md"] { gap: 1rem; }
+.fpb-section[data-fpb-gap="lg"] { gap: 2rem; }
+.fpb-section[data-fpb-gap="xl"] { gap: 3.5rem; }
+.fpb-section[data-fpb-valign="start"] { align-items: start; }
+.fpb-section[data-fpb-valign="center"] { align-items: center; }
+.fpb-section[data-fpb-valign="end"] { align-items: end; }
+.fpb-section[data-fpb-valign="stretch"] { align-items: stretch; }
+
+/*
+ * Columns stack on a phone (and on a tablet if asked). Written twice: a media query for
+ * the published page and the Preview frame, and a container query for the canvas, whose
+ * Tablet and Mobile widths are a narrower box rather than a narrower window.
+ */
+@media (max-width: 640px) {
+    .fpb-page .fpb-section[data-fpb-stack="mobile"],
+    .fpb-page .fpb-section[data-fpb-stack="tablet"] { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 1024px) {
+    .fpb-page .fpb-section[data-fpb-stack="tablet"] { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@container fpb-canvas (max-width: 640px) {
+    .fpb-section[data-fpb-stack="mobile"],
+    .fpb-section[data-fpb-stack="tablet"] { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@container fpb-canvas (max-width: 1024px) {
+    .fpb-section[data-fpb-stack="tablet"] { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+/* ── Backgrounds: video and overlay layers ───────────────────────────────── */
+
+.fpb-bg {
+    position: absolute; inset: 0; z-index: -1; overflow: hidden;
+    border-radius: inherit; pointer-events: none; container-type: size;
+}
+.fpb-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fpb-bg-frame {
+    position: absolute; top: 50%; left: 50%; border: 0;
+    width: max(100cqw, 177.78cqh); height: max(100cqh, 56.25cqw);
+    transform: translate(-50%, -50%);
+}
+.fpb-bg-overlay { position: absolute; inset: 0; }
+
+/* ── The editor: blocks you can grab by the edges ────────────────────────── */
+
+.fpb-block-quick { display: inline-flex; align-items: center; gap: 0.05rem; padding: 0 0.1rem; }
+.fpb-block-quick button {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.35rem; height: 1.2rem; padding: 0; border: 0; border-radius: 0.25rem;
+    background: transparent; color: #fff; opacity: 0.7; cursor: pointer;
+}
+.fpb-block-quick button:hover { opacity: 1; background: rgba(255, 255, 255, 0.12); }
+.fpb-block-quick button[data-active="true"] { opacity: 1; background: #2563eb; }
+.fpb-quick-icon { width: 0.85rem; height: 0.85rem; }
+.fpb-block-tools .fpb-block-more { font-size: 0.9rem; line-height: 1; }
+
+.fpb-resize {
+    position: absolute; z-index: 3; touch-action: none;
+    background: transparent;
+}
+.fpb-resize::after {
+    content: ''; position: absolute; border-radius: 999px; background: #2563eb;
+    box-shadow: 0 0 0 2px #fff, 0 1px 4px rgba(15, 23, 42, 0.3);
+    transition: transform 0.12s ease;
+}
+.fpb-resize-x { top: 50%; right: -3px; width: 12px; height: 2.5rem; margin-top: -1.25rem; cursor: ew-resize; }
+.fpb-resize-x::after { inset: 0.35rem 3px; }
+.fpb-resize-y { left: 50%; bottom: -6px; width: 2.5rem; height: 12px; margin-left: -1.25rem; cursor: ns-resize; }
+.fpb-resize-y::after { inset: 3px 0.35rem; }
+.fpb-resize:hover::after { transform: scale(1.25); }
+
+body[data-fpb-resizing],
+body[data-fpb-resizing] * { user-select: none !important; }
+body[data-fpb-resizing="x"],
+body[data-fpb-resizing="x"] * { cursor: ew-resize !important; }
+body[data-fpb-resizing="y"],
+body[data-fpb-resizing="y"] * { cursor: ns-resize !important; }
+
+/* Selected embeds and videos play on the canvas; anything else stays click-to-select. */
+.fpb-block[data-selected="true"] > .fpb-block-body .fpb-embed iframe,
+.fpb-block[data-selected="true"] > .fpb-block-body .fpb-video video { pointer-events: auto; }
+
+/*
+ * The overlay: editor decoration drawn beside the canvas rather than inside it.
+ * It is a zero-size layer at the frame's origin; everything on it is positioned with a
+ * transform in the frame's scroll coordinates, so it scrolls with the page.
+ */
+.fpb-overlay { position: absolute; top: 0; left: 0; width: 0; height: 0; z-index: 4; pointer-events: none; }
+
+.fpb-drop-indicator {
+    position: absolute; top: 0; left: 0; height: 4px;
+    display: flex; align-items: center; justify-content: space-between;
+    opacity: 0; transform-origin: center;
+    transition:
+        transform 0.14s cubic-bezier(0.2, 0.7, 0.2, 1),
+        width 0.14s cubic-bezier(0.2, 0.7, 0.2, 1),
+        height 0.14s cubic-bezier(0.2, 0.7, 0.2, 1),
+        opacity 0.12s ease;
+    will-change: transform;
+}
+.fpb-drop-indicator[data-visible="true"] { opacity: 1; }
+.fpb-drop-indicator[data-kind="line"]::before {
+    content: ''; position: absolute; inset: 0; border-radius: 999px;
+    background: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18), 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+.fpb-drop-indicator[data-kind="zone"] {
+    border: 2px dashed #2563eb; border-radius: 0.5rem; background: rgba(37, 99, 235, 0.08);
+    justify-content: center;
+}
+.fpb-drop-cap {
+    position: relative; width: 10px; height: 10px; margin: 0 -5px; border-radius: 999px;
+    background: #fff; border: 2px solid #2563eb; box-sizing: border-box;
+}
+.fpb-drop-indicator[data-kind="zone"] .fpb-drop-cap { display: none; }
+.fpb-drop-label {
+    position: relative; padding: 0.15rem 0.55rem; border-radius: 999px;
+    background: #2563eb; color: #fff; font-size: 0.68rem; font-weight: 650; white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+.fpb-drop-indicator[data-kind="line"][data-visible="true"] .fpb-drop-label { animation: fpb-drop-pulse 1.4s ease-in-out infinite; }
+@keyframes fpb-drop-pulse {
+    0%, 100% { box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35); }
+    50% { box-shadow: 0 2px 16px rgba(37, 99, 235, 0.6); }
+}
+
+.fpb-col-handle {
+    position: absolute; top: 0; left: -7px; width: 14px; pointer-events: auto;
+    cursor: col-resize; touch-action: none;
+}
+.fpb-col-handle::before {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 6px; width: 2px; border-radius: 2px;
+    background: rgba(37, 99, 235, 0.35); transition: background 0.12s ease, width 0.12s ease, left 0.12s ease;
+}
+.fpb-col-handle::after {
+    content: ''; position: absolute; top: 50%; left: 2px; width: 10px; height: 2.25rem; margin-top: -1.125rem;
+    border-radius: 999px; background: #2563eb; box-shadow: 0 0 0 2px #fff, 0 1px 4px rgba(15, 23, 42, 0.3);
+}
+.fpb-col-handle:hover::before,
+.fpb-col-handle[data-active="true"]::before { left: 5px; width: 4px; background: #2563eb; }
+
+.fpb-size-tip {
+    position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; border-radius: 0.35rem;
+    background: #111827; color: #fff; font-size: 0.72rem; font-weight: 600; white-space: nowrap;
+    opacity: 0; transition: opacity 0.1s ease;
+}
+.fpb-size-tip[data-visible="true"] { opacity: 1; }
+
+/* ── The inspector: one panel per element ────────────────────────────────── */
+
+.fpb-inspector-head {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    margin: -0.25rem 0 0.75rem; padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+.fpb-inspector-icon {
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+    width: 2.1rem; height: 2.1rem; border-radius: 0.5rem;
+    background: rgba(37, 99, 235, 0.1); color: #2563eb;
+}
+.fpb-inspector-icon svg { width: 1.15rem; height: 1.15rem; }
+.fpb-inspector-heading { flex: 1; min-width: 0; }
+.fpb-inspector-heading .fpb-panel-title { margin: 0; font-size: 0.95rem; line-height: 1.3; }
+.fpb-inspector-desc { margin: 0.1rem 0 0; font-size: 0.72rem; opacity: 0.65; }
+.fpb-inspector-parent {
+    margin-top: 0.15rem; padding: 0; border: 0; background: transparent; color: #2563eb;
+    font-size: 0.72rem; font-weight: 600; cursor: pointer;
+}
+.fpb-inspector-parent:hover { text-decoration: underline; }
+.fpb-inspector-actions { display: flex; gap: 0.15rem; flex: none; }
+.fpb-icon-btn {
+    display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem;
+    padding: 0; border: 0; border-radius: 0.375rem; background: transparent; color: inherit; opacity: 0.6; cursor: pointer;
+}
+.fpb-icon-btn:hover, .fpb-icon-btn[aria-pressed="true"] { opacity: 1; background: rgba(128, 128, 128, 0.12); }
+.fpb-icon { width: 1rem; height: 1rem; }
+
+.fpb-style-panel { display: grid; gap: 0.75rem; }
+.fpb-style-panel > .fi-sc,
+.fpb-style-panel .fi-sc { gap: 0.75rem; }
+.fpb-presets { border: 1px solid rgba(128, 128, 128, 0.22); border-radius: 0.6rem; padding: 0.6rem 0.75rem; }
+.fpb-presets summary { cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+.fpb-presets[open] summary { margin-bottom: 0.5rem; }
+.fpb-anchor-field small { margin: 0; }
+
+.fpb-field-flash { animation: fpb-field-flash 1.3s ease-out; border-radius: 0.5rem; }
+@keyframes fpb-field-flash {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); background: transparent; }
+    15% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35); background: rgba(37, 99, 235, 0.06); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); background: transparent; }
+}
+
+.fpb-crumb-field { display: inline-flex; gap: 0.25rem; font-weight: 700; color: #2563eb; }
+.fpb-notice {
+    font-size: 0.75rem; font-weight: 600; color: #15803d;
+    max-width: 22rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.fpb-shortcode-ref { display: block; font-size: 0.75rem; line-height: 1.5; }
+.fpb-shortcode-ref ul { margin: 0.35rem 0 0; padding: 0; list-style: none; display: grid; gap: 0.3rem; }
+.fpb-shortcode-ref code { font-family: ui-monospace, monospace; font-size: 0.72rem; padding: 0.05rem 0.3rem; border-radius: 0.25rem; background: rgba(128, 128, 128, 0.14); }
+.fpb-shortcode-ref span { opacity: 0.7; }
+
+/* ── The right-click menu ────────────────────────────────────────────────── */
+
+.fpb-menu {
+    position: fixed; z-index: 60; min-width: 13.5rem; padding: 0.3rem;
+    border: 1px solid rgba(128, 128, 128, 0.25); border-radius: 0.6rem;
+    background: var(--fpb-panel-bg, #fff); color: inherit;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
+    font-size: 0.8rem;
+}
+.fpb-menu-title {
+    margin: 0; padding: 0.3rem 0.55rem 0.35rem; font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.5;
+}
+.fpb-menu-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: 100%;
+    padding: 0.38rem 0.55rem; border: 0; border-radius: 0.4rem; background: transparent;
+    color: inherit; text-align: left; cursor: pointer;
+}
+.fpb-menu-item:hover:not(:disabled), .fpb-menu-item:focus-visible { background: rgba(37, 99, 235, 0.1); outline: none; }
+.fpb-menu-item:disabled { opacity: 0.4; cursor: default; }
+.fpb-menu-item kbd { font-family: ui-monospace, monospace; font-size: 0.68rem; opacity: 0.55; }
+.fpb-menu-danger { color: #dc2626; }
+.fpb-menu-danger:hover { background: rgba(220, 38, 38, 0.1) !important; }
+.fpb-menu-sep { margin: 0.25rem 0.3rem; border: 0; border-top: 1px solid rgba(128, 128, 128, 0.2); }
+
+/* ── Preview ─────────────────────────────────────────────────────────────── */
+
+.fpb-preview {
+    position: fixed; inset: 0; z-index: 70; display: flex; flex-direction: column;
+    background: var(--fpb-editor-bg, #f4f4f5);
+}
+.fpb-preview-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 0.55rem 0.85rem; border-bottom: 1px solid rgba(128, 128, 128, 0.22);
+    background: var(--fpb-panel-bg, #fff);
+}
+.fpb-preview-heading { display: flex; align-items: baseline; gap: 0.6rem; min-width: 0; }
+.fpb-preview-heading strong { font-size: 0.95rem; }
+.fpb-preview-note { font-size: 0.75rem; opacity: 0.65; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fpb-preview-actions { display: flex; gap: 0.4rem; align-items: center; }
+button.fpb-preview-close {
+    display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.35rem 0.75rem;
+    border: 0; border-radius: 0.45rem; background: #2563eb; color: #fff; font-size: 0.78rem; font-weight: 650; cursor: pointer;
+}
+.fpb-preview-close kbd { font-family: ui-monospace, monospace; font-size: 0.65rem; opacity: 0.75; }
+.fpb-preview-stage {
+    position: relative; flex: 1; min-height: 0; display: flex; justify-content: center;
+    padding: 1rem; overflow: auto;
+}
+.fpb-preview-frame {
+    width: 100%; height: 100%; border: 0; border-radius: 0.5rem; background: #fff;
+    box-shadow: 0 1px 12px rgba(15, 23, 42, 0.12); transition: width 0.2s ease;
+}
+.fpb-preview-frame[data-device="tablet"] { width: 768px; max-width: 100%; }
+.fpb-preview-frame[data-device="mobile"] { width: 390px; max-width: 100%; }
+.fpb-preview-loading {
+    position: absolute; top: 2rem; left: 50%; transform: translateX(-50%); margin: 0;
+    padding: 0.4rem 0.8rem; border-radius: 999px; background: #111827; color: #fff; font-size: 0.75rem;
+}
+
+/*
+ * Full-screen edit mode. The Design page is a dedicated editor, so Filament's
+ * sidebar, topbar and page header would only steal space from the canvas.
+ */
+html:has(body.fpb-edit-mode),
+body.fpb-edit-mode {
+    height: 100%;
+    overflow: hidden;
+}
+
+body.fpb-edit-mode .fi-topbar-ctn,
+body.fpb-edit-mode .fi-sidebar,
+body.fpb-edit-mode .fi-sidebar-close-overlay,
+body.fpb-edit-mode .fi-layout-sidebar-toggle-btn-ctn,
+body.fpb-edit-mode .fi-header {
+    display: none !important;
+}
+
+body.fpb-edit-mode .fi-layout,
+body.fpb-edit-mode .fi-main-ctn,
+body.fpb-edit-mode .fi-main,
+body.fpb-edit-mode .fi-page,
+body.fpb-edit-mode .fi-page-header-main-ctn,
+body.fpb-edit-mode .fi-page-main,
+body.fpb-edit-mode .fi-page-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+body.fpb-edit-mode .fi-main-ctn {
+    display: flex;
+}
+
+.fpb-dock,
+.fpb-add { display: none; }
+
+@media (max-width: 1280px) {
+    /*
+     * One workspace at a time. Stacking palette + canvas + inspector made the
+     * editor a tall scroll on a phone or a split laptop. The dock keeps 100dvh
+     * and Alpine shows the active panel.
+     */
+    html:has(body.fpb-edit-mode),
+    body.fpb-edit-mode {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .fpb,
+    .fpb[data-wide="true"] {
+        position: relative;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        height: 100dvh;
+        min-height: 100dvh;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .fpb-chrome {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.45rem 0.7rem;
+    }
+
+    .fpb-chrome-start { gap: 0.45rem; }
+    .fpb-chrome-title { font-size: 0.85rem; max-width: 40vw; }
+    .fpb-crumbs { display: none; }
+    .fpb-desktop-only { display: none !important; }
+
+    .fpb-palette,
+    .fpb-inspector,
+    .fpb-canvas-wrap {
+        grid-column: 1;
+        grid-row: 2;
+        border: 0;
+        min-height: 0;
+    }
+
+    .fpb-empty-copy-wide { display: none; }
+    .fpb-empty-copy-narrow { display: inline; }
+
+    .fpb-canvas-frame { padding: 0.75rem; }
+
+    .fpb-block[data-selected="true"] > .fpb-block-bar {
+        opacity: 1;
+        position: sticky;
+        top: 0;
+    }
+
+    /* Sticky, the selected bar takes a row of its own and covers nothing, so on a phone
+       it stays one strip, which also leaves the larger touch buttons room to fit. */
+    .fpb-block-bar {
+        pointer-events: auto;
+        gap: 0.4rem;
+        padding: 0.2rem 0.4rem;
+        background: rgba(17, 17, 17, 0.8);
+    }
+
+    .fpb-block-bar > .fpb-block-handle,
+    .fpb-block-bar > .fpb-block-label,
+    .fpb-block-bar > .fpb-block-quick,
+    .fpb-block-bar > .fpb-block-tools {
+        min-height: 0;
+        padding: 0;
+        margin-left: 0;
+        background: none;
+    }
+
+    .fpb-block-handle { display: none; }
+    .fpb-resize, .fpb-block-quick { display: none; }
+    .fpb-preview-bar { flex-wrap: wrap; }
+    .fpb-preview-note { display: none; }
+
+    .fpb-block-handle,
+    .fpb-block-tools button {
+        min-width: 2.75rem;
+        min-height: 2.75rem;
+        touch-action: manipulation;
+    }
+
+    .fpb-palette-item,
+    .fpb-empty-btn,
+    .fpb-token-pick,
+    .fpb-structure-btn,
+    .fpb-dock-btn,
+    .fpb-ghost-reveal {
+        min-height: 2.75rem;
+        touch-action: manipulation;
+    }
+
+    button.fpb-add {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 1rem;
+        bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+        z-index: 4;
+        width: 3.25rem;
+        height: 3.25rem;
+        border: 0;
+        border-radius: 999px;
+        background: #2563eb;
+        color: #fff;
+        font-size: 1.75rem;
+        font-weight: 500;
+        line-height: 1;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+        touch-action: manipulation;
+    }
+
+    .fpb-dock {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-column: 1;
+        grid-row: 3;
+        gap: 0.25rem;
+        padding: 0.35rem 0.45rem;
+        padding-bottom: max(0.35rem, env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid rgba(128, 128, 128, 0.22);
+        background: var(--fpb-panel-bg, #fff);
+        z-index: 4;
+    }
+
+    .fpb-dock-btn {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        border: 0;
+        border-radius: 0.5rem;
+        background: transparent;
+        color: inherit;
+        font-size: 0.78rem;
+        font-weight: 650;
+        opacity: 0.6;
+        cursor: pointer;
+    }
+
+    .fpb-dock-btn[data-active="true"] {
+        background: var(--fpb-raised-bg, #fff);
+        opacity: 1;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .fpb-dock-dot {
+        width: 0.4rem;
+        height: 0.4rem;
+        border-radius: 999px;
+        background: #2563eb;
+    }
+}
+
+/*
+ * Reduced motion. The canvas script checks this too and skips its timelines; this is
+ * the other half, for the transitions CSS owns. An editor someone is in all day is
+ * exactly where the preference matters most.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .fpb *,
+    .fpb *::before,
+    .fpb *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+[x-cloak] { display: none !important; }

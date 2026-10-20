@@ -1,0 +1,297 @@
+/*
+ * Design tokens and block styles shared by the public site, the visual editor's canvas
+ * and the preview. Imported by resources/css/app.css and the Filament admin theme, so a
+ * block looks identical everywhere it is rendered.
+ *
+ * Text colours go through --ink variables rather than fixed utilities: a band with a dark
+ * background flips them for every block inside it, so a heading dropped into a dark band
+ * is readable without the editor touching it.
+ */
+
+@theme {
+    --font-display: 'Bricolage Grotesque', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    --color-brand-50: oklch(0.969 0.016 285);
+    --color-brand-100: oklch(0.943 0.03 285);
+    --color-brand-200: oklch(0.894 0.058 285);
+    --color-brand-300: oklch(0.811 0.104 285);
+    --color-brand-400: oklch(0.709 0.165 285);
+    --color-brand-500: oklch(0.606 0.222 285);
+    --color-brand-600: oklch(0.541 0.246 285);
+    --color-brand-700: oklch(0.471 0.226 285);
+    --color-brand-800: oklch(0.398 0.185 285);
+    --color-brand-900: oklch(0.343 0.148 285);
+    --color-brand-950: oklch(0.243 0.106 285);
+
+    --color-accent-50: oklch(0.984 0.019 190);
+    --color-accent-100: oklch(0.953 0.051 190);
+    --color-accent-200: oklch(0.91 0.093 190);
+    --color-accent-300: oklch(0.855 0.138 190);
+    --color-accent-400: oklch(0.789 0.154 190);
+    --color-accent-500: oklch(0.704 0.14 190);
+    --color-accent-600: oklch(0.6 0.118 190);
+    --color-accent-700: oklch(0.511 0.096 190);
+    --color-accent-800: oklch(0.437 0.078 190);
+    --color-accent-900: oklch(0.386 0.063 190);
+    --color-accent-950: oklch(0.277 0.046 190);
+
+    --animate-marquee: marquee 40s linear infinite;
+    --animate-float: float 8s ease-in-out infinite;
+    --animate-fade-up: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+    @keyframes marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-18px) scale(1.04); }
+    }
+
+    @keyframes fade-up {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: none; }
+    }
+}
+
+@theme inline {
+    --color-ink: var(--ink);
+    --color-ink-muted: var(--ink-muted);
+    --color-ink-soft: var(--ink-soft);
+    --color-line: var(--line);
+    --color-surface: var(--surface);
+}
+
+@layer base {
+    :root,
+    .tone-light {
+        --ink: var(--color-zinc-950);
+        --ink-muted: var(--color-zinc-600);
+        --ink-soft: var(--color-zinc-500);
+        --line: var(--color-zinc-200);
+        --surface: var(--color-white);
+    }
+
+    .tone-dark {
+        --ink: var(--color-white);
+        --ink-muted: rgb(255 255 255 / 0.78);
+        --ink-soft: rgb(255 255 255 / 0.6);
+        --line: rgb(255 255 255 / 0.14);
+        --surface: rgb(255 255 255 / 0.06);
+    }
+
+    .tone-light,
+    .tone-dark {
+        color: var(--ink-muted);
+    }
+}
+
+@utility text-gradient {
+    background-image: linear-gradient(100deg, var(--color-brand-500), var(--color-accent-400) 55%, var(--color-brand-400));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@utility bg-aurora {
+    background:
+        radial-gradient(60% 80% at 8% 0%, color-mix(in oklch, var(--color-brand-500) 60%, transparent), transparent 70%),
+        radial-gradient(45% 65% at 92% 8%, color-mix(in oklch, var(--color-accent-400) 45%, transparent), transparent 70%),
+        radial-gradient(70% 80% at 50% 110%, color-mix(in oklch, var(--color-brand-700) 70%, transparent), transparent 70%),
+        var(--color-zinc-950);
+}
+
+@utility bg-grid {
+    background-image:
+        linear-gradient(to right, color-mix(in oklch, var(--ink) 7%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in oklch, var(--ink) 7%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 40%, transparent 100%);
+}
+
+/* The faint asterisks around a highlighted word, visible only while editing. */
+.hl-mark {
+    -webkit-text-fill-color: var(--ink-soft);
+    opacity: 0.35;
+    font-weight: 400;
+}
+
+/* ── Page builder wrappers ───────────────────────────────────────────────────
+ * The package wraps every block in .fpb-el (site) or .fpb-block (canvas). Its default
+ * section padding and heading margins are for a neutral page; the blocks here manage
+ * their own spacing.
+ */
+.fpb-page {
+    display: block;
+}
+
+.fpb-section {
+    padding: 0;
+    gap: 2rem;
+}
+
+.fpb-page .fpb-section[data-fpb-gap='lg'],
+.fpb-section[data-fpb-gap='lg'] {
+    gap: 3rem;
+}
+
+.fpb-page .fpb-section[data-fpb-gap='xl'],
+.fpb-section[data-fpb-gap='xl'] {
+    gap: 5rem;
+}
+
+/* Brand tokens offered in the Style tab ("Brand presets"). */
+.fpb-el[data-fpb-background='brand-soft'],
+.fpb-block[data-fpb-background='brand-soft'] > .fpb-block-body {
+    background: var(--color-brand-50);
+}
+
+.fpb-el[data-fpb-background='muted'],
+.fpb-block[data-fpb-background='muted'] > .fpb-block-body {
+    background: var(--color-zinc-50);
+}
+
+.fpb-el[data-fpb-background='card'],
+.fpb-block[data-fpb-background='card'] > .fpb-block-body {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -12px rgb(24 24 27 / 0.15);
+    border: 1px solid var(--color-zinc-200);
+}
+
+.fpb-el[data-fpb-width='narrow'] { max-width: 42rem; margin-inline: auto; }
+.fpb-el[data-fpb-width='default'] { max-width: 56rem; margin-inline: auto; }
+.fpb-el[data-fpb-width='wide'] { max-width: 72rem; margin-inline: auto; }
+
+/* Blocks stacked directly in a column or a band get breathing room between them. */
+.fpb-slot > .fpb-el + .fpb-el,
+.fpb-slot > .fpb-block + .fpb-block {
+    margin-top: 1.5rem;
+}
+
+[data-slot-flow='row'] > .fpb-slot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: var(--justify, flex-start);
+}
+
+[data-slot-flow='row'] > .fpb-slot > .fpb-el + .fpb-el,
+[data-slot-flow='row'] > .fpb-slot > .fpb-block + .fpb-block {
+    margin-top: 0;
+}
+
+[data-slot-flow='grid'] > .fpb-slot {
+    display: grid;
+    gap: var(--grid-gap, 1.5rem);
+    grid-template-columns: repeat(var(--grid-cols-sm, 1), minmax(0, 1fr));
+    align-items: var(--grid-align, stretch);
+}
+
+[data-slot-flow='grid'] > .fpb-slot > .fpb-el + .fpb-el,
+[data-slot-flow='grid'] > .fpb-slot > .fpb-block + .fpb-block {
+    margin-top: 0;
+}
+
+[data-slot-flow='grid'] > .fpb-slot > .fpb-el,
+[data-slot-flow='grid'] > .fpb-slot > .fpb-block > .fpb-block-body,
+[data-slot-flow='grid'] > .fpb-slot > .fpb-el > *,
+[data-slot-flow='grid'] > .fpb-slot > .fpb-block > .fpb-block-body > * {
+    height: 100%;
+}
+
+@container (min-width: 36rem) {
+    [data-slot-flow='grid'] > .fpb-slot {
+        grid-template-columns: repeat(var(--grid-cols-md, 2), minmax(0, 1fr));
+    }
+}
+
+@container (min-width: 60rem) {
+    [data-slot-flow='grid'] > .fpb-slot {
+        grid-template-columns: repeat(var(--grid-cols, 3), minmax(0, 1fr));
+    }
+}
+
+/* Inline editing on dark backgrounds: keep the dashed hint visible. */
+.tone-dark [data-fpb-field]:hover {
+    outline-color: rgb(255 255 255 / 0.5) !important;
+}
+
+/* Long-form text. */
+.prose-cms {
+    @apply prose prose-zinc max-w-none prose-headings:font-display prose-headings:tracking-tight prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl prose-code:font-medium prose-code:before:content-none prose-code:after:content-none prose-code:rounded-md prose-code:bg-zinc-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.85em];
+    --tw-prose-body: var(--ink-muted);
+    --tw-prose-headings: var(--ink);
+    --tw-prose-bold: var(--ink);
+    --tw-prose-quotes: var(--ink);
+    --tw-prose-bullets: var(--color-brand-400);
+    --tw-prose-counters: var(--color-brand-500);
+    --tw-prose-hr: var(--line);
+    --tw-prose-th-borders: var(--line);
+    --tw-prose-td-borders: var(--line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-marquee,
+    .animate-float {
+        animation: none;
+    }
+}
+
+/*
+ * A block dropped straight onto the page (not into a band) still gets the page's gutters
+ * and reading width. Bands and heroes are edge to edge by design.
+ */
+.fpb-page > .fpb-el:not([data-block='band'], [data-block='hero']),
+.fpb-canvas > .fpb-block:not([data-type='band'], [data-type='hero']) > .fpb-block-body {
+    max-width: 72rem;
+    margin-inline: auto;
+    padding: 2.5rem 1.5rem;
+}
+
+/* The package's own primitives (list, quote, divider, video, embed), in the site's voice. */
+.fpb-list {
+    --fpb-accent: var(--color-brand-500);
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    color: var(--ink-muted);
+    font-size: 1.0625rem;
+    line-height: 1.75rem;
+}
+
+.fpb-list[data-fpb-marker='check'] li {
+    padding-left: 2rem;
+}
+
+.fpb-list[data-fpb-marker='check'] li::before {
+    content: '';
+    top: 0.3rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 999px;
+    background: var(--color-brand-100)
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%237c3aed'%3E%3Cpath fill-rule='evenodd' d='M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z'/%3E%3C/svg%3E")
+        center / 0.8rem no-repeat;
+}
+
+.fpb-quote blockquote {
+    border-left-color: var(--color-brand-500);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-style: normal;
+    font-size: 1.5rem;
+}
+
+.fpb-divider {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 1rem 0;
+}
+
+.fpb-video video,
+.fpb-embed {
+    border-radius: 1.5rem;
+    overflow: hidden;
+}

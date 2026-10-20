@@ -1,0 +1,28 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build && npm run build:aurora",
+        "build:aurora": "vite build --config ../packages/cms/vite.config.js && vite build --config ../packages/borealis/vite.config.js && vite build --config ../packages/minimal/vite.config.js",
+        "dev": "vite",
+        "dev:aurora": "vite build --watch --config ../packages/cms/vite.config.js & vite build --watch --config ../packages/borealis/vite.config.js & vite build --watch --config ../packages/minimal/vite.config.js & wait",
+        "postinstall": "node -e \"const fs = require('fs'); fs.existsSync('../packages/node_modules') || fs.symlinkSync('../aurora-docs/node_modules', '../packages/node_modules', 'dir')\""
+    },
+    "devDependencies": {
+        "@tailwindcss/typography": "^0.5.20",
+        "@tailwindcss/vite": "^4.3.3",
+        "laravel-vite-plugin": "^3.1",
+        "tailwindcss": "^4.3.3",
+        "vite": "^8.0.0"
+    },
+    "optionalDependencies": {
+        "@laravel/multiplex": "^0.4.1"
+    },
+    "dependencies": {
+        "@alpinejs/collapse": "^3.17.4",
+        "@alpinejs/intersect": "^3.17.4",
+        "alpinejs": "^3.17.4",
+        "cropperjs": "^1.6.2"
+    }
+}

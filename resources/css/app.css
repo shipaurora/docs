@@ -1,0 +1,33 @@
+@import url('https://fonts.bunny.net/css?family=bricolage-grotesque:500,600,700,800|inter:400,500,600,700');
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@import './site/tokens.css';
+
+@source '../views/**/*.blade.php';
+@source '../../app/Blocks/**/*.php';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@theme {
+    --font-sans: var(--font-body);
+}
+
+@layer base {
+    html {
+        -webkit-font-smoothing: antialiased;
+        scroll-behavior: smooth;
+    }
+
+    /* The page itself, here rather than on <body>, so the visual editor's canvas has it too. */
+    body {
+        @apply bg-white font-body text-ink-muted;
+    }
+
+    ::selection {
+        @apply bg-brand-200 text-brand-950;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
