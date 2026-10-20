@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use Aurora\Filament\Resources\Pages\Pages\CreatePage;
 use Aurora\Filament\Resources\Pages\Pages\EditPage;
 use Aurora\Models\Page;
+use Aurora\Models\Site;
 use Aurora\Models\User;
+use Aurora\Support\CurrentSite;
 use Aurora\Support\PageRedirects;
 use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,6 +25,16 @@ class PublicSiteTest extends TestCase
         ]]);
 
         $this->get('/')->assertOk()->assertSee('Welcome to the')->assertSee('text-gradient', false);
+    }
+
+    public function test_without_a_default_site_requests_find_nothing_instead_of_failing(): void
+    {
+        Site::query()->update(['is_default' => false]);
+        CurrentSite::forget();
+
+        // The second request too: the first one's empty lookup isn't kept.
+        $this->get('/about')->assertNotFound();
+        $this->get('/about')->assertNotFound();
     }
 
     public function test_drafts_are_hidden_from_visitors(): void
