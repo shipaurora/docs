@@ -6,7 +6,6 @@ use Aurora\Enums\ApiScope;
 use Aurora\Models\ApiKey;
 use Aurora\Models\Page;
 use Aurora\Models\Setting;
-use Aurora\Models\User;
 use Aurora\Models\Webhook;
 use Aurora\Support\Copilot;
 use Illuminate\Database\Seeder;
@@ -41,7 +40,7 @@ class SettingsSeeder extends Seeder
             ],
         ]);
 
-        $admin = User::query()->where('email', UserSeeder::email())->value('id');
+        $admin = PageSeeder::author()?->getKey();
 
         // Keys for the APIs, named after what uses them (the keys themselves are never shown again).
         foreach ([

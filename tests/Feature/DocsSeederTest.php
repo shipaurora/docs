@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Aurora\Database\Seeders\RolesAndPermissionsSeeder;
 use Aurora\Models\ApiKey;
 use Aurora\Models\Asset;
 use Aurora\Models\AuthenticatorApp;
@@ -16,7 +17,6 @@ use Aurora\Models\Redirect;
 use Aurora\Models\User;
 use Aurora\Models\Webhook;
 use Database\Seeders\Demo\DocsSeeder;
-use Database\Seeders\Demo\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +32,7 @@ class DocsSeederTest extends TestCase
     {
         Storage::fake('public');
         Storage::fake('local');
+        $this->admin();
 
         $this->seed(DocsSeeder::class);
 
@@ -81,6 +82,7 @@ class DocsSeederTest extends TestCase
     {
         Storage::fake('public');
         Storage::fake('local');
+        $admin = $this->admin();
 
         $this->seed(DocsSeeder::class);
 
@@ -99,9 +101,34 @@ class DocsSeederTest extends TestCase
         // The pages list (latest edited first) opens with Home.
         $this->assertTrue(Page::query()->latest('updated_at')->first()->is_homepage);
 
-        // One person wrote it all: every page is theirs.
-        $account = User::query()->sole();
-        $this->assertSame(UserSeeder::email(), $account->email);
-        $this->assertSame([$account->id], Page::query()->distinct()->pluck('author_id')->all());
+        // No account of its own: the site's admin wrote it all.
+        $this->assertSame($admin->getKey(), User::query()->sole()->getKey());
+        $this->assertSame([$admin->getKey()], Page::query()->distinct()->pluck('author_id')->all());
+    }
+
+    public function test_seeding_never_makes_an_account(): void
+    {
+        Storage::fake('public');
+        Storage::fake('local');
+
+        // Not even on an empty database: its password would be in this public code.
+        $this->seed(DocsSeeder::class);
+
+        $this->assertSame(0, User::query()->count());
+        $this->assertTrue(Page::query()->where('is_homepage', true)->sole()->isLive());
+        $this->assertSame([null], Page::query()->distinct()->pluck('author_id')->all());
+    }
+
+    /**
+     * The site's admin, as aurora:install or make:aurora-user makes them.
+     */
+    protected function admin(): User
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $admin = User::factory()->create(['email' => 'owner@example.com']);
+        $admin->syncRoles([User::SUPER_ADMIN]);
+
+        return $admin;
     }
 }

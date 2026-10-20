@@ -10,15 +10,16 @@ class DocsSeeder extends Seeder
 {
     public function run(): void
     {
-        // The docs website's content: what every installation has, plus Norwegian, its one
-        // account, its pages, media, the contact form, menus and settings. It can run again
-        // (php artisan db:seed on a deploy): the content is replaced, and the accounts, with
-        // their passwords, passkeys and authenticator apps, stay as they are.
+        // The docs website's content: what every installation has, plus Norwegian, its pages,
+        // media, the contact form, menus and settings. No account: its password would be in
+        // this public code. Make yours with aurora:install or make:aurora-user; the content is
+        // credited to the first admin. It can run again (php artisan db:seed on a deploy): the
+        // content is replaced, and the accounts, with their passwords, passkeys and
+        // authenticator apps, stay as they are.
         $this->call([
             ResetContentSeeder::class,
             EssentialSeeder::class,
             LocaleSeeder::class,
-            UserSeeder::class,
             PageSeeder::class,
             SettingsSeeder::class,
             MenuSeeder::class,

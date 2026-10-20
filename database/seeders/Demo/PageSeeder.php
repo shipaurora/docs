@@ -127,8 +127,10 @@ class PageSeeder extends Seeder
     {
         $this->createAssets();
 
-        // Every page, revision and change is by the demo's one person.
-        $admin = User::query()->where('email', UserSeeder::email())->first();
+        // Every page, revision and change is by the site's first admin: the account made with
+        // aurora:install or make:aurora-user. No account is seeded (its password would be in
+        // this public code); without one, the content is simply nobody's.
+        $admin = static::author();
 
         // This website's own layouts, beside Aurora's: views in this app (resources/views/layouts).
         // The homepage's header floats over its first block (its own take on Aurora's landing
@@ -203,7 +205,7 @@ class PageSeeder extends Seeder
         foreach ($this->ids as $slug => $id) {
             $page = Page::query()->find($id);
 
-            auth()->setUser($page->author ?? $admin);
+            $this->actAs($page->author ?? $admin);
 
             RevisionContext::as(RevisionSource::Canvas, 'Designed the page', fn () => $page->update([
                 'blocks' => BlockTreeBuilder::flatten($this->withAssets($this->blocksFor($slug))),
@@ -291,7 +293,7 @@ class PageSeeder extends Seeder
 
         // A new line on the contact page, saved but not published yet: changes waiting on a live page.
         $contact = Page::query()->find($this->ids['contact']);
-        auth()->setUser($admin);
+        $this->actAs($admin);
 
         RevisionContext::as(RevisionSource::Canvas, 'Added office hours to the contact page', fn () => WorkingCopies::capture(fn () => $contact->update([
             'excerpt' => 'Questions about Aurora, or a demo for your team. We answer on weekdays, 9–16 CET.',
@@ -398,7 +400,7 @@ class PageSeeder extends Seeder
 
         $page->block_translations = [...$page->block_translations ?? [], $locale => $blocks];
 
-        auth()->setUser($page->author);
+        $this->actAs($page->author);
 
         RevisionContext::as(RevisionSource::Canvas, "Translated into {$language}", fn () => $page->save());
 
@@ -485,6 +487,22 @@ class PageSeeder extends Seeder
                 ->assets()
                 ->attach(array_map(fn (string $image): string => $this->assets['demo/'.$image.'.jpg'], $images));
         }
+    }
+
+    /**
+     * The account the site's content is credited to: its first Super Admin, or nobody.
+     */
+    public static function author(): ?User
+    {
+        return User::query()->role(User::SUPER_ADMIN)->oldest()->first();
+    }
+
+    /**
+     * Edits made as this person (their revisions and unpublished changes), or as nobody.
+     */
+    protected function actAs(?User $user): void
+    {
+        $user !== null ? auth()->setUser($user) : auth()->forgetUser();
     }
 
     protected function asset(?string $path): ?string

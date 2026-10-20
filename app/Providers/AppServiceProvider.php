@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use Aurora\Support\Demo;
-use Database\Seeders\Demo\UserSeeder;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -14,7 +12,6 @@ class AppServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        // The account demo mode (AURORA_DEMO_LOGIN) signs in as with one click.
-        Demo::register(UserSeeder::accounts());
+        //
     }
 }
