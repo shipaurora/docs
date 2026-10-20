@@ -86,18 +86,23 @@ class ApiExplorerTest extends TestCase
             ->assertDontSee('The GraphQL API is switched off');
     }
 
-    public function test_the_api_tabs_in_settings_link_to_their_explorer(): void
+    public function test_the_api_tabs_in_settings_link_to_their_explorer_once_the_api_is_on(): void
     {
         $this->actingAs($this->userWithRole(User::SUPER_ADMIN));
+        $tabs = ['rest-api' => [Api::Rest, 'Open the API explorer', 'aurora.explorer.rest'], 'graphql' => [Api::Graphql, 'Open the GraphQL playground', 'aurora.explorer.graphql']];
 
-        Livewire::withQueryParams(['tab' => 'integrations', 'section' => 'rest-api'])
-            ->test(SiteSettings::class)
-            ->assertSee('Open the API explorer')
-            ->assertSee(route('aurora.explorer.rest'), false);
+        foreach ($tabs as $section => [$api, $label, $route]) {
+            // Off: nothing to explore (the API answers "not found").
+            Livewire::withQueryParams(['tab' => 'integrations', 'section' => $section])
+                ->test(SiteSettings::class)
+                ->assertDontSee($label);
 
-        Livewire::withQueryParams(['tab' => 'integrations', 'section' => 'graphql'])
-            ->test(SiteSettings::class)
-            ->assertSee('Open the GraphQL playground')
-            ->assertSee(route('aurora.explorer.graphql'), false);
+            Setting::put([$api->setting() => ['enabled' => true, 'requires_key' => true]]);
+
+            Livewire::withQueryParams(['tab' => 'integrations', 'section' => $section])
+                ->test(SiteSettings::class)
+                ->assertSee($label)
+                ->assertSee(route($route), false);
+        }
     }
 }
