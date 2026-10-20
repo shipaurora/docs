@@ -368,8 +368,11 @@ class TranslationsTest extends TestCase
 
     public function test_every_label_in_the_code_is_in_both_language_files(): void
     {
-        $english = json_decode(file_get_contents(Aurora::path('lang/en.json')), true);
-        $norwegian = json_decode(file_get_contents(Aurora::path('lang/nb.json')), true);
+        // The CMS's labels in its own lang files; the website's own (its blocks, its layouts) in
+        // the app's, in Norwegian only: an English label is its own text.
+        $website = is_file(lang_path('nb.json')) ? json_decode(file_get_contents(lang_path('nb.json')), true) : [];
+        $english = json_decode(file_get_contents(Aurora::path('lang/en.json')), true) + $website;
+        $norwegian = json_decode(file_get_contents(Aurora::path('lang/nb.json')), true) + $website;
 
         // Sentence labels; package keys ("vendor::file.key") and group keys ("file.key") live elsewhere.
         $keys = array_filter(app(TranslationSync::class)->keysInCode(), fn (string $key): bool => ! str_contains($key, '::') && ! preg_match('/^[a-z0-9_-]+\.[a-z0-9_.-]+$/i', $key));
