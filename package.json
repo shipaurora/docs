@@ -3,11 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build && npm run build:aurora",
-        "build:aurora": "vite build --config ../packages/cms/vite.config.js && vite build --config ../packages/borealis/vite.config.js && vite build --config ../packages/minimal/vite.config.js",
-        "dev": "vite",
-        "dev:aurora": "vite build --watch --config ../packages/cms/vite.config.js & vite build --watch --config ../packages/borealis/vite.config.js & vite build --watch --config ../packages/minimal/vite.config.js & wait",
-        "postinstall": "node -e \"const fs = require('fs'); fs.existsSync('../packages/node_modules') || fs.symlinkSync('../aurora-docs/node_modules', '../packages/node_modules', 'dir')\""
+        "build": "vite build",
+        "dev": "vite"
     },
     "devDependencies": {
         "@tailwindcss/typography": "^0.5.20",
