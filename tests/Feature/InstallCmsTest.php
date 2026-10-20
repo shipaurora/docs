@@ -63,6 +63,15 @@ class InstallCmsTest extends TestCase
         return ['--no-interaction' => true, '--site-name' => 'Fjordkaffe', '--name' => 'Kari Nordmann', '--email' => 'kari@example.com', '--password' => 'secret-coffee'];
     }
 
+    public function test_after_create_project_without_anyone_to_ask_it_says_how_to_finish(): void
+    {
+        $this->artisan('aurora:install', ['--interactive-only' => true, '--no-interaction' => true])
+            ->expectsOutputToContain('php artisan aurora:install')
+            ->assertSuccessful();
+
+        $this->assertSame(0, User::query()->count());
+    }
+
     public function test_a_blank_install_has_what_the_cms_needs_and_an_admin(): void
     {
         $this->artisan('aurora:install', $this->installOptions())->assertSuccessful();

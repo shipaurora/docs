@@ -66,6 +66,23 @@ class TranslationsTest extends TestCase
         $this->assertSame(0, app(TranslationSync::class)->import()['added']);
     }
 
+    public function test_labels_come_from_the_lang_files_before_there_is_a_database(): void
+    {
+        // A project just created: its SQLite file doesn't exist yet (composer create-project
+        // boots the app for package:discover before anything has been migrated).
+        $connection = config('database.default');
+        config(['database.connections.not-created-yet' => ['driver' => 'sqlite', 'database' => sys_get_temp_dir().'/aurora-'.uniqid().'.sqlite', 'prefix' => '']]);
+        config(['database.default' => 'not-created-yet']);
+
+        try {
+            $labels = app('translation.loader')->load('nb', '*', '*');
+        } finally {
+            config(['database.default' => $connection]);
+        }
+
+        $this->assertSame('Slik lager du en blokk', $labels['How to make a block'] ?? null);
+    }
+
     public function test_reimporting_with_the_languages_in_another_order_changes_nothing(): void
     {
         app(TranslationSync::class)->import();
