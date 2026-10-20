@@ -40,19 +40,19 @@ class DemoLoginTest extends TestCase
     {
         $this->seed([RolesAndPermissionsSeeder::class, UserSeeder::class]);
 
-        $this->get(route('demo.login', 'thomas@alrek.no'))->assertRedirect('/admin');
+        $this->get(route('demo.login', UserSeeder::email()))->assertRedirect('/admin');
 
-        $this->assertAuthenticatedAs(User::query()->where('email', 'thomas@alrek.no')->sole());
+        $this->assertAuthenticatedAs(User::query()->where('email', UserSeeder::email())->sole());
     }
 
     public function test_it_signs_in_as_no_one_but_the_seeded_demo_accounts(): void
     {
         $this->seed([RolesAndPermissionsSeeder::class, UserSeeder::class]);
         User::factory()->create(['email' => 'boss@example.com']);
-        User::query()->where('email', 'thomas@alrek.no')->update(['is_active' => false]);
+        User::query()->where('email', UserSeeder::email())->update(['is_active' => false]);
 
         $this->get(route('demo.login', 'boss@example.com'))->assertNotFound();
-        $this->get(route('demo.login', 'thomas@alrek.no'))->assertNotFound();
+        $this->get(route('demo.login', UserSeeder::email()))->assertNotFound();
         $this->assertGuest();
     }
 
@@ -60,8 +60,8 @@ class DemoLoginTest extends TestCase
     {
         $this->seed([RolesAndPermissionsSeeder::class, UserSeeder::class]);
 
-        $this->get(route('demo.login', ['email' => 'thomas@alrek.no', 'to' => '/admin/main/pages']))->assertRedirect('/admin/main/pages');
-        $this->get(route('demo.login', ['email' => 'thomas@alrek.no', 'to' => 'https://evil.example']))->assertRedirect('/admin');
-        $this->get(route('demo.login', ['email' => 'thomas@alrek.no', 'to' => '//evil.example']))->assertRedirect('/admin');
+        $this->get(route('demo.login', ['email' => UserSeeder::email(), 'to' => '/admin/main/pages']))->assertRedirect('/admin/main/pages');
+        $this->get(route('demo.login', ['email' => UserSeeder::email(), 'to' => 'https://evil.example']))->assertRedirect('/admin');
+        $this->get(route('demo.login', ['email' => UserSeeder::email(), 'to' => '//evil.example']))->assertRedirect('/admin');
     }
 }

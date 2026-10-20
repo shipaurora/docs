@@ -15,6 +15,14 @@ class UserSeeder extends Seeder
     ];
 
     /**
+     * The account the site's content is by: every page, revision and key is credited to it.
+     */
+    public static function email(): string
+    {
+        return self::USERS[0][1];
+    }
+
+    /**
      * The accounts as the sign-in page's demo mode offers them (Aurora\Support\Demo).
      *
      * @return array<int, array{name: string, email: string, role: string}>

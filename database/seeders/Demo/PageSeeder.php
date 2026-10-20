@@ -128,7 +128,7 @@ class PageSeeder extends Seeder
         $this->createAssets();
 
         // Every page, revision and change is by the demo's one person.
-        $admin = User::query()->where('email', 'thomas@alrek.no')->first();
+        $admin = User::query()->where('email', UserSeeder::email())->first();
 
         // This website's own layouts, beside Aurora's: views in this app (resources/views/layouts).
         // The homepage's header floats over its first block (its own take on Aurora's landing

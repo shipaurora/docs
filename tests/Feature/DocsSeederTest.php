@@ -16,6 +16,7 @@ use Aurora\Models\Redirect;
 use Aurora\Models\User;
 use Aurora\Models\Webhook;
 use Database\Seeders\Demo\DocsSeeder;
+use Database\Seeders\Demo\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -36,10 +37,10 @@ class DocsSeederTest extends TestCase
 
         // Set up as its owner would: a password, an authenticator app and a passkey. And a
         // visitor wrote through the contact form.
-        $thomas = User::query()->sole();
-        $thomas->update(['password' => 'a-strong-password']);
-        AuthenticatorApp::factory()->create(['user_id' => $thomas->getKey(), 'name' => 'iPhone']);
-        DB::table('passkeys')->insert(['id' => (string) Str::uuid(), 'authenticatable_id' => $thomas->getKey(), 'name' => 'MacBook', 'credential_id' => 'abc', 'data' => '{}', 'created_at' => now(), 'updated_at' => now()]);
+        $account = User::query()->sole();
+        $account->update(['password' => 'a-strong-password']);
+        AuthenticatorApp::factory()->create(['user_id' => $account->getKey(), 'name' => 'iPhone']);
+        DB::table('passkeys')->insert(['id' => (string) Str::uuid(), 'authenticatable_id' => $account->getKey(), 'name' => 'MacBook', 'credential_id' => 'abc', 'data' => '{}', 'created_at' => now(), 'updated_at' => now()]);
         $form = Form::query()->sole();
         $form->submissions()->create(['data' => ['name' => 'Kari'], 'status' => 'new']);
 
@@ -65,11 +66,11 @@ class DocsSeederTest extends TestCase
         $this->get('/')->assertOk();
 
         // The account as its owner left it.
-        $thomas = User::query()->sole();
-        $this->assertTrue(Hash::check('a-strong-password', $thomas->password));
-        $this->assertSame(['Super Admin'], $thomas->getRoleNames()->all());
-        $this->assertSame(1, AuthenticatorApp::query()->where('user_id', $thomas->getKey())->count());
-        $this->assertSame(1, DB::table('passkeys')->where('authenticatable_id', $thomas->getKey())->count());
+        $account = User::query()->sole();
+        $this->assertTrue(Hash::check('a-strong-password', $account->password));
+        $this->assertSame(['Super Admin'], $account->getRoleNames()->all());
+        $this->assertSame(1, AuthenticatorApp::query()->where('user_id', $account->getKey())->count());
+        $this->assertSame(1, DB::table('passkeys')->where('authenticatable_id', $account->getKey())->count());
 
         // The contact form is the same one, with what was sent through it.
         $this->assertSame($form->getKey(), Form::query()->sole()->getKey());
@@ -99,8 +100,8 @@ class DocsSeederTest extends TestCase
         $this->assertTrue(Page::query()->latest('updated_at')->first()->is_homepage);
 
         // One person wrote it all: every page is theirs.
-        $thomas = User::query()->sole();
-        $this->assertSame('thomas@alrek.no', $thomas->email);
-        $this->assertSame([$thomas->id], Page::query()->distinct()->pluck('author_id')->all());
+        $account = User::query()->sole();
+        $this->assertSame(UserSeeder::email(), $account->email);
+        $this->assertSame([$account->id], Page::query()->distinct()->pluck('author_id')->all());
     }
 }

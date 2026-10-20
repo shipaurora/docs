@@ -41,7 +41,7 @@ class SettingsSeeder extends Seeder
             ],
         ]);
 
-        $admin = User::query()->where('email', 'thomas@alrek.no')->value('id');
+        $admin = User::query()->where('email', UserSeeder::email())->value('id');
 
         // Keys for the APIs, named after what uses them (the keys themselves are never shown again).
         foreach ([
