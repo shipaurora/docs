@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Aurora\Filament\Pages\AiAssistant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
+use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Token;
 use Livewire\Livewire;
@@ -104,6 +105,20 @@ class McpOAuthTest extends TestCase
             ->assertCanNotSeeTableRecords([$token->token->id]);
 
         $this->assertTrue(Token::query()->find($token->token->id)->revoked);
+    }
+
+    public function test_a_new_site_without_a_personal_access_client_still_makes_tokens(): void
+    {
+        // As after aurora:install: Passport's keys, but no client for personal access tokens.
+        Client::query()->delete();
+        $editor = $this->userWithRole('Editor');
+
+        $page = Livewire::actingAs($editor)->test(AiAssistant::class);
+        $page->callAction('createToken', ['name' => 'Laptop'])->assertHasNoActionErrors();
+        $page->callAction('createToken', ['name' => 'Desktop'])->assertHasNoActionErrors();
+
+        $this->assertSame(2, $editor->tokens()->count());
+        $this->assertSame(1, Client::query()->count());
     }
 
     public function test_a_new_token_is_shown_once_on_the_page(): void
