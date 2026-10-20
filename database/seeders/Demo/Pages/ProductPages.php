@@ -89,7 +89,7 @@ trait ProductPages
                             B::button('Philosophy and architecture', $this->id('architecture'), 'link'),
                         ]),
                     ],
-                    [B::code("composer create-project shipaurora/aurora my-site   # ends by running aurora:install\ncd my-site && npm install && npm run build", 'bash', null, 'The installer sets up the database, roles and your first admin account.')],
+                    [B::code("composer create-project shipaurora/aurora my-site   # asks a few questions and sets it all up\ncd my-site", 'bash', null, 'The installer sets up the database, roles and your first admin account.')],
                 ], '1-1'),
             ], 'white', 'xl', 'wide'),
             B::band([
