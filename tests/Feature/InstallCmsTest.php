@@ -13,6 +13,7 @@ use Illuminate\Database\Console\Migrations\FreshCommand;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Laravel\Passport\Client;
@@ -35,6 +36,12 @@ class InstallCmsTest extends TestCase
      */
     protected array $layoutViews = [];
 
+    /**
+     * The app's public folder during a test: empty, so the website's front end isn't built
+     * (and the installer's published files and storage link land here, not in the site's).
+     */
+    protected string $publicPath;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -43,11 +50,17 @@ class InstallCmsTest extends TestCase
         mkdir($this->environmentPath);
         file_put_contents($this->environmentPath.'/.env', "APP_NAME=Fjordkaffe\n");
         $this->app->useEnvironmentPath($this->environmentPath);
+        $this->publicPath = sys_get_temp_dir().'/cms-install-public-'.Str::random(8);
+        mkdir($this->publicPath);
+        $this->app->usePublicPath($this->publicPath);
+        // Pages opened after installing load no built assets: there are none in that folder.
+        $this->withoutVite();
         $this->layoutViews = glob(Layouts::path().'/*.blade.php') ?: [];
     }
 
     protected function tearDown(): void
     {
+        File::deleteDirectory($this->publicPath);
         @unlink($this->environmentPath.'/.env');
         @rmdir($this->environmentPath);
         File::delete(array_diff(glob(Layouts::path().'/*.blade.php') ?: [], $this->layoutViews));
@@ -70,6 +83,43 @@ class InstallCmsTest extends TestCase
             ->assertSuccessful();
 
         $this->assertSame(0, User::query()->count());
+    }
+
+    public function test_with_build_it_installs_and_builds_the_website_s_front_end(): void
+    {
+        Process::fake(['npm --version' => Process::result('10.9.0'), '*' => Process::result()]);
+
+        $this->artisan('aurora:install', [...$this->installOptions(), '--build' => true])
+            ->expectsOutputToContain('Building the website\'s front end')
+            ->assertSuccessful();
+
+        Process::assertRan('npm install');
+        Process::assertRan('npm run build');
+    }
+
+    public function test_without_npm_or_with_a_failing_build_the_install_still_finishes_and_says_what_to_run(): void
+    {
+        Process::fake(['npm --version' => Process::result(exitCode: 127)]);
+
+        $this->artisan('aurora:install', [...$this->installOptions(), '--build' => true])
+            ->expectsOutputToContain('npm wasn\'t found')
+            ->assertSuccessful();
+
+        Process::fake(['npm --version' => Process::result('10.9.0'), 'npm install' => Process::result(), 'npm run build' => Process::result(errorOutput: 'Could not resolve "./missing.css"', exitCode: 1)]);
+
+        $this->artisan('aurora:install', [...$this->installOptions(), '--build' => true])
+            ->expectsOutputToContain('npm run build failed')
+            ->expectsOutputToContain('Could not resolve "./missing.css"')
+            ->assertSuccessful();
+    }
+
+    public function test_after_create_project_it_says_to_go_into_the_new_folder(): void
+    {
+        $folder = basename(base_path());
+
+        $this->artisan('aurora:install', [...$this->installOptions(), '--interactive-only' => true, '--no-interaction' => true])
+            ->expectsOutputToContain("cd {$folder} && php artisan aurora:install")
+            ->assertSuccessful();
     }
 
     public function test_a_blank_install_has_what_the_cms_needs_and_an_admin(): void
@@ -122,6 +172,7 @@ class InstallCmsTest extends TestCase
             ->expectsQuestion('Email address', 'kari@example.com')
             ->expectsQuestion('Password', 'secret-coffee')
             ->expectsConfirmation('Run the website\'s own seeders too?', 'no')
+            ->expectsConfirmation('Build the website\'s front end now?', 'no')
             ->assertSuccessful();
 
         $this->assertSame(['nb', 'en'], Locale::query()->orderByDesc('is_default')->pluck('code')->all());
@@ -153,6 +204,7 @@ class InstallCmsTest extends TestCase
             ->expectsQuestion('Email address', 'kari@example.com')
             ->expectsQuestion('Password', 'secret-coffee')
             ->expectsConfirmation('Run the website\'s own seeders too?', 'no')
+            ->expectsConfirmation('Build the website\'s front end now?', 'no')
             ->assertSuccessful();
 
         $this->assertTrue(Schema::hasTable('pages'));
@@ -166,6 +218,7 @@ class InstallCmsTest extends TestCase
         $this->artisan('aurora:install', ['--site-name' => 'Fjordkaffe', '--language' => 'en', '--languages' => 'nb:no', '--name' => 'Kari', '--email' => 'kari@example.com', '--password' => 'secret-coffee'])
             ->expectsConfirmation('The database already has content (3 pages). Start from scratch?', 'no')
             ->expectsConfirmation('Run the website\'s own seeders too?', 'no')
+            ->expectsConfirmation('Build the website\'s front end now?', 'no')
             ->assertSuccessful();
 
         $this->assertSame(3, Page::query()->count(), 'Kept: nothing was dropped and no homepage added.');
