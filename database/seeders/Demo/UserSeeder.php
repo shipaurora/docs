@@ -4,7 +4,6 @@ namespace Database\Seeders\Demo;
 
 use Aurora\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Storage;
 
 class UserSeeder extends Seeder
 {
@@ -12,7 +11,7 @@ class UserSeeder extends Seeder
      * The demo's one account, the Super Admin who wrote the docs, with the password "password".
      */
     public const USERS = [
-        ['Thomas Alrek', 'thomas@alrek.no', 'Super Admin', 'Creator of Aurora', 'avatars/thomas.jpg', 'en'],
+        ['John Doe', 'john@example.com', 'Super Admin', 'Example user', 'en'],
     ];
 
     /**
@@ -27,20 +26,11 @@ class UserSeeder extends Seeder
 
     public function run(): void
     {
-        foreach (self::USERS as [$name, $email, $role, $title, $avatar, $locale]) {
+        foreach (self::USERS as [$name, $email, $role, $title, $locale]) {
             // Seeding again leaves an account alone: its password, passkeys, authenticator app
             // and role are its owner's.
             if (User::query()->where('email', $email)->exists()) {
                 continue;
-            }
-
-            // Portraits in seeders/images/avatars are for people only (the rest of seeders/images
-            // goes into the media library); without one, the person is shown with their initials.
-            $source = __DIR__.'/images/'.$avatar;
-            $avatar = file_exists($source) ? 'avatars/'.basename($avatar) : null;
-
-            if ($avatar !== null) {
-                Storage::disk('public')->put($avatar, file_get_contents($source));
             }
 
             $user = User::query()->create([
@@ -48,7 +38,6 @@ class UserSeeder extends Seeder
                 'name' => $name,
                 'password' => 'password',
                 'job_title' => $title,
-                'avatar' => $avatar,
                 'locale' => $locale,
                 'is_active' => true,
             ]);
