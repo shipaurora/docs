@@ -20,6 +20,7 @@ use Aurora\Support\WebsiteAccess;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Tabs\Tab;
+use GraphQL\Type\Introspection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -250,6 +251,20 @@ class PublicApiTest extends TestCase
         $this->graphql('mutation { deletePage }')->assertJsonPath('data', null);
         $nested = '{ menu(location: "header") { items { '.str_repeat('children { ', 10).'title'.str_repeat(' }', 10).' } } }';
         $this->assertStringStartsWith('Max query depth should be 10', $this->graphql($nested)->json('errors.0.message'));
+    }
+
+    public function test_tools_read_the_whole_schema_but_content_stays_as_shallow_as_before(): void
+    {
+        $this->switchOn(Api::Graphql);
+
+        // The introspection GraphiQL and other tools send: deeper than content may go.
+        $schema = $this->graphql(Introspection::getIntrospectionQuery())->assertOk();
+        $this->assertNull($schema->json('errors'));
+        $this->assertSame('Query', $schema->json('data.__schema.queryType.name'));
+
+        // Content beside it doesn't get the schema's depth.
+        $mixed = '{ __typename menu(location: "header") { items { '.str_repeat('children { ', 10).'title'.str_repeat(' }', 10).' } } }';
+        $this->assertStringStartsWith('Max query depth should be 10', $this->graphql($mixed)->json('errors.0.message'));
     }
 
     public function test_with_a_key_needed_any_api_key_opens_both_apis_until_it_is_revoked(): void
