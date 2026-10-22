@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea5b7943892b8815f8c90bc2f432b82b",
+    "content-hash": "a4096cacdb3725c0a1d720a105965a5a",
     "packages": [
         {
             "name": "althinect/filament-spatie-roles-permissions",
@@ -7484,23 +7484,26 @@
             "time": "2022-12-17T21:53:22+00:00"
         },
         {
-            "name": "shipaurora/borealis-theme",
-            "version": "v1.0.2",
+            "name": "shipaurora/borealis",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/shipaurora/borealis-theme.git",
-                "reference": "bece904f6c13f7e7348c7259505ae0a68816b6f3"
+                "url": "https://github.com/shipaurora/borealis.git",
+                "reference": "87bf6480604ccfe882491cc5d08d6d5e50c4d345"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/borealis-theme/zipball/bece904f6c13f7e7348c7259505ae0a68816b6f3",
-                "reference": "bece904f6c13f7e7348c7259505ae0a68816b6f3",
+                "url": "https://api.github.com/repos/shipaurora/borealis/zipball/87bf6480604ccfe882491cc5d08d6d5e50c4d345",
+                "reference": "87bf6480604ccfe882491cc5d08d6d5e50c4d345",
                 "shasum": ""
             },
             "require": {
                 "filament/filament": "^5.10",
                 "php": "^8.3",
                 "shipaurora/cms": "^1.0"
+            },
+            "replace": {
+                "shipaurora/borealis-theme": "self.version"
             },
             "type": "library",
             "extra": {
@@ -7534,6 +7537,7 @@
                 "admin-theme",
                 "aurora",
                 "aurora-cms",
+                "aurora-cms-theme",
                 "cms",
                 "dark-mode",
                 "filament",
@@ -7546,20 +7550,20 @@
                 "issues": "https://github.com/shipaurora/borealis-theme/issues",
                 "source": "https://github.com/shipaurora/borealis-theme"
             },
-            "time": "2026-10-20T12:09:38+00:00"
+            "time": "2026-10-22T12:13:42+00:00"
         },
         {
             "name": "shipaurora/cms",
-            "version": "v1.0.10",
+            "version": "v1.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/cms.git",
-                "reference": "e8c15cde6aa474b050bd3e55c47f491a1ba45442"
+                "reference": "049ae73bc5566ec5dfd6c4194955733c90581949"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/cms/zipball/e8c15cde6aa474b050bd3e55c47f491a1ba45442",
-                "reference": "e8c15cde6aa474b050bd3e55c47f491a1ba45442",
+                "url": "https://api.github.com/repos/shipaurora/cms/zipball/049ae73bc5566ec5dfd6c4194955733c90581949",
+                "reference": "049ae73bc5566ec5dfd6c4194955733c90581949",
                 "shasum": ""
             },
             "require": {
@@ -7583,7 +7587,7 @@
                 "marcelweidum/filament-passkeys": "^3.0",
                 "php": "^8.3",
                 "pragmarx/google2fa-qrcode": "^4.0",
-                "shipaurora/borealis-theme": "^1.0",
+                "shipaurora/borealis": "^1.0",
                 "spatie/image": "^3.9",
                 "spatie/laravel-medialibrary": "^11.23",
                 "spatie/laravel-passkeys": "^1.8",
@@ -7656,26 +7660,29 @@
                 "issues": "https://github.com/shipaurora/cms/issues",
                 "source": "https://github.com/shipaurora/cms"
             },
-            "time": "2026-10-22T11:51:56+00:00"
+            "time": "2026-10-22T12:20:35+00:00"
         },
         {
-            "name": "shipaurora/minimal-theme",
-            "version": "v1.0.2",
+            "name": "shipaurora/minimal",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/shipaurora/minimal-theme.git",
-                "reference": "63f4c72a369eb88c73062acd3c942e20fd42d3f0"
+                "url": "https://github.com/shipaurora/minimal.git",
+                "reference": "9e6fa741538509a2a391baae6d3959d33c1fc03b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/minimal-theme/zipball/63f4c72a369eb88c73062acd3c942e20fd42d3f0",
-                "reference": "63f4c72a369eb88c73062acd3c942e20fd42d3f0",
+                "url": "https://api.github.com/repos/shipaurora/minimal/zipball/9e6fa741538509a2a391baae6d3959d33c1fc03b",
+                "reference": "9e6fa741538509a2a391baae6d3959d33c1fc03b",
                 "shasum": ""
             },
             "require": {
                 "filament/filament": "^5.10",
                 "php": "^8.3",
                 "shipaurora/cms": "^1.0"
+            },
+            "replace": {
+                "shipaurora/minimal-theme": "self.version"
             },
             "type": "library",
             "extra": {
@@ -7709,6 +7716,7 @@
                 "admin-theme",
                 "aurora",
                 "aurora-cms",
+                "aurora-cms-theme",
                 "cms",
                 "dark-mode",
                 "filament",
@@ -7722,7 +7730,7 @@
                 "issues": "https://github.com/shipaurora/minimal-theme/issues",
                 "source": "https://github.com/shipaurora/minimal-theme"
             },
-            "time": "2026-10-20T12:09:42+00:00"
+            "time": "2026-10-22T12:13:46+00:00"
         },
         {
             "name": "spatie/image",

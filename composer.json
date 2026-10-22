@@ -12,8 +12,8 @@
     "require": {
         "php": "^8.3",
         "shipaurora/cms": "^1.0",
-        "shipaurora/minimal-theme": "^1.0",
-        "shipaurora/borealis-theme": "^1.0",
+        "shipaurora/minimal": "^1.0",
+        "shipaurora/borealis": "^1.0",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0"
     },
