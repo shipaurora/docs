@@ -10,7 +10,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "shipaurora/cms": "^1.0",
         "shipaurora/minimal": "^1.0",
         "shipaurora/borealis": "^1.0",
