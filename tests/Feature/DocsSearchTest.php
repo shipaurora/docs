@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\DocsSearchController;
 use Aurora\Models\Layout;
 use Aurora\Models\Page;
 use Aurora\Support\Layouts;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Js;
 use Tests\TestCase;
 
 class DocsSearchTest extends TestCase
@@ -46,8 +48,8 @@ class DocsSearchTest extends TestCase
         $this->get('/docs?q=passkeys')
             ->assertOk()
             ->assertSee('One page for “passkeys”', false)
-            ->assertSee('Passkeys and two-factor sign-in')
-            ->assertSee('<mark>Passkeys</mark>', false)
+            // The searched words marked, in the title as in the words around them.
+            ->assertSee('<mark>Passkeys</mark> and two-factor sign-in', false)
             ->assertDontSee('Passkeys for editors, a guide');
     }
 
@@ -68,7 +70,7 @@ class DocsSearchTest extends TestCase
         ]);
 
         $this->get('/docs?q=passkeys')
-            ->assertSee('Passkeys and two-factor sign-in')
+            ->assertSee('<mark>Passkeys</mark> and two-factor sign-in', false)
             ->assertDontSee('>Webhooks<', false);
     }
 
@@ -85,6 +87,46 @@ class DocsSearchTest extends TestCase
             ->assertOk()
             ->assertSee('role="search"', false)
             ->assertSee('action="'.$this->docs->url().'"', false)
-            ->assertDontSee('Nothing in the docs matches');
+            ->assertSee(Js::from(route('docs.search'))->toHtml(), false)
+            ->assertDontSee('docs-search-heading');
+    }
+
+    public function test_results_open_as_people_type_with_the_searched_words_marked(): void
+    {
+        $this->getJson(route('docs.search', ['q' => 'passkeys']))
+            ->assertOk()
+            ->assertJsonCount(1, 'results')
+            ->assertJsonPath('results.0.url', $this->passkeys->url())
+            ->assertJsonPath('results.0.title', '<mark>Passkeys</mark> and two-factor sign-in')
+            ->assertJsonPath('results.0.section', 'Docs')
+            ->assertJsonPath('more', false);
+
+        $this->getJson(route('docs.search', ['q' => 'kangaroo']))->assertOk()->assertJsonCount(0, 'results');
+        $this->getJson(route('docs.search'))->assertOk()->assertJsonCount(0, 'results');
+    }
+
+    public function test_only_the_first_results_open_and_the_results_page_has_the_rest(): void
+    {
+        foreach (range(1, DocsSearchController::SHOWN + 1) as $number) {
+            Page::factory()->published()->create([
+                'title' => "Webhooks, part {$number}",
+                'slug' => "webhooks-{$number}",
+                'parent_id' => $this->docs->getKey(),
+                'layout_id' => $this->docs->layout_id,
+            ]);
+        }
+
+        $this->getJson(route('docs.search', ['q' => 'webhooks']))
+            ->assertOk()
+            ->assertJsonCount(DocsSearchController::SHOWN, 'results')
+            ->assertJsonPath('more', true);
+    }
+
+    public function test_a_title_is_escaped_before_its_words_are_marked(): void
+    {
+        $this->passkeys->update(['title' => 'Passkeys <script>alert(1)</script>']);
+
+        $this->getJson(route('docs.search', ['q' => 'passkeys']))
+            ->assertJsonPath('results.0.title', '<mark>Passkeys</mark> &lt;script&gt;alert(1)&lt;/script&gt;');
     }
 }

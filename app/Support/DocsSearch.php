@@ -35,10 +35,10 @@ class DocsSearch
     protected const CANDIDATES = 50;
 
     /**
-     * The docs pages matching a search, most relevant first, each with the section it's in
-     * and a few words around the first match.
+     * The docs pages matching a search, most relevant first, each with its title and a few
+     * words around the first match, the searched words marked in both, and the section it's in.
      *
-     * @return Collection<int, array{page: Page, section: ?string, snippet: HtmlString}>
+     * @return Collection<int, array{page: Page, title: HtmlString, section: ?string, snippet: HtmlString}>
      */
     public static function results(string $query): Collection
     {
@@ -62,6 +62,7 @@ class DocsSearch
             ->take(self::LIMIT)
             ->map(fn (array $match): array => [
                 'page' => $match['page'],
+                'title' => static::highlight($match['page']->title, $words),
                 'section' => $match['page']->parent?->title,
                 'snippet' => static::snippet($match['text'], $words),
             ])
@@ -110,14 +111,26 @@ class DocsSearch
         }
 
         $excerpt = mb_substr($text, $start, $length);
-        $html = e($excerpt);
+        $html = static::highlight($excerpt, $words)->toHtml();
+
+        return new HtmlString(($start > 0 ? '… ' : '').$html.($start + mb_strlen($excerpt) < mb_strlen($text) ? ' …' : ''));
+    }
+
+    /**
+     * A text, escaped, with every searched word in it marked.
+     *
+     * @param  array<int, string>  $words
+     */
+    public static function highlight(string $text, array $words): HtmlString
+    {
+        $html = e($text);
 
         if ($words !== []) {
             $pattern = '/('.implode('|', array_map(fn (string $word): string => preg_quote(e($word), '/'), $words)).')/iu';
             $html = (string) preg_replace($pattern, '<mark>$1</mark>', $html);
         }
 
-        return new HtmlString(($start > 0 ? '… ' : '').$html.($start + mb_strlen($excerpt) < mb_strlen($text) ? ' …' : ''));
+        return new HtmlString($html);
     }
 
     /**

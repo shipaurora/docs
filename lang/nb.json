@@ -2,5 +2,6 @@
     "Search the docs": "Søk i dokumentasjonen",
     "Nothing in the docs matches “:query”": "Ingenting i dokumentasjonen passer til «:query»",
     "{1} One page for “:query”|[2,*] :count pages for “:query”": "{1} Én side for «:query»|[2,*] :count sider for «:query»",
-    "Try fewer or other words, or browse the docs from the menu.": "Prøv færre eller andre ord, eller bla i dokumentasjonen fra menyen."
+    "Try fewer or other words, or browse the docs from the menu.": "Prøv færre eller andre ord, eller bla i dokumentasjonen fra menyen.",
+    "See all results": "Se alle treff"
 }
