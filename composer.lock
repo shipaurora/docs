@@ -7550,16 +7550,16 @@
         },
         {
             "name": "shipaurora/cms",
-            "version": "v1.0.9",
+            "version": "v1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/cms.git",
-                "reference": "54e118f295d0972bdf07faba3fb38cb55f2ef108"
+                "reference": "e8c15cde6aa474b050bd3e55c47f491a1ba45442"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/cms/zipball/54e118f295d0972bdf07faba3fb38cb55f2ef108",
-                "reference": "54e118f295d0972bdf07faba3fb38cb55f2ef108",
+                "url": "https://api.github.com/repos/shipaurora/cms/zipball/e8c15cde6aa474b050bd3e55c47f491a1ba45442",
+                "reference": "e8c15cde6aa474b050bd3e55c47f491a1ba45442",
                 "shasum": ""
             },
             "require": {
@@ -7595,6 +7595,14 @@
                 "usamamuneerchaudhary/filament-command-palette": "^2.0",
                 "wallacemartinss/filament-icon-picker": "^2.0",
                 "webonyx/graphql-php": "^15.38"
+            },
+            "require-dev": {
+                "brianium/paratest": "^7.20",
+                "fakerphp/faker": "^1.23",
+                "laravel/pint": "^1.27",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^11.3",
+                "phpunit/phpunit": "^12.5.12"
             },
             "type": "library",
             "extra": {
@@ -7648,7 +7656,7 @@
                 "issues": "https://github.com/shipaurora/cms/issues",
                 "source": "https://github.com/shipaurora/cms"
             },
-            "time": "2026-10-20T16:10:32+00:00"
+            "time": "2026-10-22T11:51:56+00:00"
         },
         {
             "name": "shipaurora/minimal-theme",
