@@ -44,7 +44,7 @@
             </div>
 
             @if ($docs)
-                <details class="group mt-4 rounded-2xl ring-1 ring-line lg:hidden">
+                <details class="group mt-4 rounded-2xl border border-line lg:hidden">
                     <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-semibold text-ink">
                         {{ __('Docs menu') }}
                         {{ svg('hero-m-chevron-down', 'size-4 opacity-60 transition group-open:rotate-180') }}
