@@ -15,8 +15,8 @@
                         @if (filled($result['section']))
                             <span class="text-xs font-semibold tracking-wider text-ink-muted uppercase">{{ $result['section'] }}</span>
                         @endif
-                        <span class="mt-1 block text-lg font-semibold text-ink group-hover:text-brand-600 [&_mark]:rounded [&_mark]:bg-brand-100 [&_mark]:px-0.5 [&_mark]:text-inherit">{{ $result['title'] }}</span>
-                        <span class="mt-1 block text-sm leading-6 text-ink-muted [&_mark]:rounded [&_mark]:bg-brand-100 [&_mark]:px-0.5 [&_mark]:text-ink">{{ $result['snippet'] }}</span>
+                        <span class="mt-1 block text-lg font-semibold text-ink group-hover:text-brand-600 [&_mark]:rounded-sm [&_mark]:bg-brand-100 [&_mark]:text-inherit">{{ $result['title'] }}</span>
+                        <span class="mt-1 block text-sm leading-6 text-ink-muted [&_mark]:rounded-sm [&_mark]:bg-brand-100 [&_mark]:text-ink">{{ $result['snippet'] }}</span>
                     </a>
                 </li>
             @endforeach

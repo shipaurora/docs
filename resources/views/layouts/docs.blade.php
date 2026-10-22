@@ -27,8 +27,9 @@
         @if ($docs)
             <aside class="hidden w-64 shrink-0 lg:block">
                 {{-- Only the menu scrolls: a scrolling box would clip the search box's outline and the
-                     results that open under it. --}}
-                <div class="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col py-12">
+                     results that open under it. Above the page (z-40, under the header's z-50), so
+                     those results open over it. --}}
+                <div class="sticky top-24 z-40 flex max-h-[calc(100vh-7rem)] flex-col py-12">
                     @include('layouts.partials.docs-search', ['root' => $docsRoot, 'query' => $query, 'id' => 'docs-search'])
                     <nav class="mt-8 min-h-0 flex-1 overflow-y-auto pr-2" aria-label="{{ __('Docs') }}">
                         @include('layouts.partials.docs-menu', ['items' => $docs->menuItems, 'isCurrent' => $isCurrent])

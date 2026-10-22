@@ -54,7 +54,7 @@
                         tabindex="-1"
                         x-on:mouseenter="active = index"
                         x-bind:class="index === active ? 'bg-brand-50' : ''"
-                        class="block rounded-xl px-3 py-2.5 [&_mark]:rounded [&_mark]:bg-brand-100 [&_mark]:px-0.5 [&_mark]:text-inherit"
+                        class="block rounded-xl px-3 py-2.5 [&_mark]:rounded-sm [&_mark]:bg-brand-100 [&_mark]:text-inherit"
                     >
                         <span x-show="result.section" x-text="result.section" class="block text-[11px] font-semibold tracking-wider text-ink-muted uppercase"></span>
                         <span x-html="result.title" class="block text-sm font-semibold text-ink"></span>
