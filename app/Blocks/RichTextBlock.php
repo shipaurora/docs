@@ -4,6 +4,7 @@ namespace App\Blocks;
 
 use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
+use Aurora\Blocks\Editable;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\ToggleButtons;
 
@@ -34,6 +35,15 @@ class RichTextBlock extends Block
     public static function defaults(): array
     {
         return ['width' => 'prose'];
+    }
+
+    /**
+     * Written right on the canvas: formatting, links, H2/H3, lists and quotes. Text with a
+     * table or a code block stays the inspector's to edit.
+     */
+    public static function editables(): array
+    {
+        return ['body' => Editable::richText()->placeholder(__('Start typing…'))];
     }
 
     public static function aiHints(): ?string
