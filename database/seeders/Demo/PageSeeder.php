@@ -28,9 +28,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * Aurora's own website, which is also its public documentation: the product pages, the docs
- * (the README, page by page, in the docs layout), the guides and the rest. One guide is a
- * draft and the contact page has changes waiting, so the publishing workflow has something
- * to show.
+ * (the README, page by page, in the docs layout), the guides and the rest. The contact page
+ * has changes waiting, so the publishing workflow has something to show.
  */
 class PageSeeder extends Seeder
 {
@@ -119,7 +118,7 @@ class PageSeeder extends Seeder
      * @var array<string, array<int, string>>
      */
     protected const PARENTS = [
-        'guides' => ['build-a-landing-page', 'let-claude-draft-a-page', 'add-your-own-block', 'run-several-sites', 'moving-from-another-cms'],
+        'guides' => ['build-a-landing-page', 'let-claude-draft-a-page', 'add-your-own-block', 'run-several-sites'],
         'legal' => ['privacy', 'terms'],
     ];
 
@@ -160,7 +159,6 @@ class PageSeeder extends Seeder
             ['let-claude-draft-a-page', 'Let Claude draft a page for you', 'standard', PageStatus::Published, $admin, 'Connect Claude over MCP and ask it for a first draft you can refine.'],
             ['add-your-own-block', 'Add your own block', 'standard', PageStatus::Published, $admin, 'Make a block with one command: a PHP class, a Blade view and the helpers that render it.'],
             ['run-several-sites', 'Run several websites from one admin', 'standard', PageStatus::Published, $admin, 'Domains, languages and people for more than one website.'],
-            ['moving-from-another-cms', 'Moving to Aurora from another CMS', 'standard', PageStatus::Draft, $admin, 'Notes for teams bringing their content over from WordPress or a form-based CMS.'],
             ['release-notes', 'Release notes', 'standard', PageStatus::Published, $admin, 'What changed in each version of Aurora.'],
             ['components', 'Component library', 'standard', PageStatus::Published, $admin, 'Every block this website is built with, on one page.'],
             ['contact', 'Contact', 'standard', PageStatus::Published, $admin, 'Questions about Aurora, or a demo for your team.'],
@@ -218,7 +216,7 @@ class PageSeeder extends Seeder
 
         $this->tellTheStory($admin);
 
-        // The pages list shows the latest edited first: in the order above, so Home leads.
+        // Sorted by last edit, the pages list shows them in the order above, so Home leads.
         foreach (array_values($this->ids) as $position => $id) {
             Page::query()->whereKey($id)->toBase()->update(['updated_at' => now()->subMinutes($position)]);
         }

@@ -5,7 +5,7 @@ namespace Database\Seeders\Demo\Pages;
 use Database\Seeders\Demo\Support\B;
 
 /**
- * The guides: real tasks, step by step. One is still a draft.
+ * The guides: real tasks, step by step.
  */
 trait GuidePages
 {
@@ -106,14 +106,6 @@ BLADE, 'blade', 'resources/views/components/blocks/quote-with-photo.blade.php'),
         return $this->guide('run-several-sites', 'Run *several websites* from one admin', 'demo/screen-languages.jpg', [
             B::rich('<p>Aurora serves more than one website, each on its own domain, from the same admin. Pages, menus, forms, redirects and settings belong to a site; media, people and roles are shared.</p><h2>1. Add a site</h2><p>Under <strong>Settings › Languages &amp; sites › Sites</strong>, add the new site with its name, domain and languages. A site switcher appears in the sidebar, and the new site\'s admin is at <code>/admin/{site}</code>.</p><h2>2. Give people access</h2><p>Open each person under Users &amp; Roles and tick the sites they work on. They only see those sites in the switcher.</p><h2>3. Point the domain</h2><p>Point the domain at the same app. A request is answered by the site whose domain it came to; the default site answers every other domain.</p>'),
             B::buttons([B::button('Read: several websites', $this->id('several-websites'), 'outline', icon: 'book-open')]),
-        ]);
-    }
-
-    protected function blocksForMovingFromAnotherCms(): array
-    {
-        return $this->guide('moving-from-another-cms', 'Moving to Aurora from *another CMS*', 'demo/coffee.jpg', [
-            B::rich('<p>Notes for teams bringing their content over. From WordPress, the importer brings pages, posts, images and menus across. From a form-based CMS, start by turning your templates into blocks.</p>'),
-            ['type' => 'alert', 'data' => ['variant' => 'warning', 'title' => 'Draft', 'body' => 'Work in progress: a checklist for Statamic and Craft sites.']],
         ]);
     }
 

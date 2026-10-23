@@ -243,10 +243,12 @@
 
 /*
  * A block dropped straight onto the page (not into a band) still gets the page's gutters
- * and reading width. Bands and heroes are edge to edge by design.
+ * and reading width. Bands and heroes are edge to edge by design. The second selector is
+ * the canvas's: this stylesheet is scoped to it there (@scope (.fpb-canvas)), so :scope is
+ * the canvas; on the website a top-level :scope is :root, and the rule does nothing.
  */
 .fpb-page > .fpb-el:not([data-block='band'], [data-block='hero']),
-.fpb-canvas > .fpb-block:not([data-type='band'], [data-type='hero']) > .fpb-block-body {
+:scope > .fpb-block:not([data-type='band'], [data-type='hero']) > .fpb-block-body {
     max-width: 72rem;
     margin-inline: auto;
     padding: 2.5rem 1.5rem;
