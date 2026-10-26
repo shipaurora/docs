@@ -118,6 +118,11 @@
     font-weight: 400;
 }
 
+/* [since 1.2.4] in the docs (App\Support\SinceBadge): the release a feature needs. */
+.docs-since {
+    @apply ms-1 inline-block rounded-full bg-brand-50 px-1.5 py-px align-[0.1em] font-body text-[0.7rem] leading-tight font-semibold tracking-normal whitespace-nowrap text-brand-700 ring-1 ring-brand-200 ring-inset;
+}
+
 /* ── Page builder wrappers ───────────────────────────────────────────────────
  * The package wraps every block in .fpb-el (site) or .fpb-block (canvas). Its default
  * section padding and heading margins are for a neutral page; the blocks here manage

@@ -28,6 +28,7 @@ use App\Blocks\TabsBlock;
 use App\Blocks\TeamMemberBlock;
 use App\Blocks\TestimonialBlock;
 use App\Http\Controllers\BlockPreviewController;
+use App\Support\SinceBadge;
 use Aurora\Blocks\Blocks;
 use Aurora\Models\Page;
 use Aurora\Support\SafeUrl;
@@ -86,6 +87,9 @@ class BlocksServiceProvider extends ServiceProvider
         ]);
 
         $this->registerSettings();
+
+        // [since 1.2.4] in the docs: the Aurora release a feature needs.
+        SinceBadge::register();
 
         // The blocks' pictures for the visual editor's block list (Concerns\HasPreviewImage).
         Route::middleware('web')->get('aurora/blocks/{type}.webp', BlockPreviewController::class)

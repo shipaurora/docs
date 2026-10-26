@@ -142,7 +142,7 @@ class DocsSearch
         $own = $page->replicate();
         $own->blocks = static::withoutPageCards($page->blocks ?? []);
 
-        return PageSearch::textIn($own, $locale);
+        return SinceBadge::strip(PageSearch::textIn($own, $locale));
     }
 
     /**
