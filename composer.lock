@@ -5246,16 +5246,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.15.0",
+            "version": "3.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon.git",
-                "reference": "217d38553209bdb44e01590d9e9a2e4df8354cce"
+                "reference": "ce0e5636fae7d1e99856eb70cae4c719a284aa08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/217d38553209bdb44e01590d9e9a2e4df8354cce",
-                "reference": "217d38553209bdb44e01590d9e9a2e4df8354cce",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/ce0e5636fae7d1e99856eb70cae4c719a284aa08",
+                "reference": "ce0e5636fae7d1e99856eb70cae4c719a284aa08",
                 "shasum": ""
             },
             "require": {
@@ -5348,7 +5348,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-18T18:27:53+00:00"
+            "time": "2026-10-25T14:32:48+00:00"
         },
         {
             "name": "nette/php-generator",
@@ -7485,16 +7485,16 @@
         },
         {
             "name": "shipaurora/borealis",
-            "version": "v1.0.9",
+            "version": "v1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/borealis.git",
-                "reference": "eb6dc71cb08c00f46ae9769a6f49a3127df2ff61"
+                "reference": "604083ced7d018d1116727c744c34b68de71ccda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/borealis/zipball/eb6dc71cb08c00f46ae9769a6f49a3127df2ff61",
-                "reference": "eb6dc71cb08c00f46ae9769a6f49a3127df2ff61",
+                "url": "https://api.github.com/repos/shipaurora/borealis/zipball/604083ced7d018d1116727c744c34b68de71ccda",
+                "reference": "604083ced7d018d1116727c744c34b68de71ccda",
                 "shasum": ""
             },
             "require": {
@@ -7550,20 +7550,20 @@
                 "issues": "https://github.com/shipaurora/borealis/issues",
                 "source": "https://github.com/shipaurora/borealis"
             },
-            "time": "2026-10-26T14:12:45+00:00"
+            "time": "2026-10-26T14:45:57+00:00"
         },
         {
             "name": "shipaurora/cms",
-            "version": "v1.2.6",
+            "version": "v1.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/cms.git",
-                "reference": "2015c8f99b9f6169fd538076b6d55d9add0a439a"
+                "reference": "5225c549208b54bc3a1c651585b6ba8ff16321d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/cms/zipball/2015c8f99b9f6169fd538076b6d55d9add0a439a",
-                "reference": "2015c8f99b9f6169fd538076b6d55d9add0a439a",
+                "url": "https://api.github.com/repos/shipaurora/cms/zipball/5225c549208b54bc3a1c651585b6ba8ff16321d3",
+                "reference": "5225c549208b54bc3a1c651585b6ba8ff16321d3",
                 "shasum": ""
             },
             "require": {
@@ -7587,7 +7587,7 @@
                 "marcelweidum/filament-passkeys": "^3.0",
                 "php": "^8.4",
                 "pragmarx/google2fa-qrcode": "^4.0",
-                "shipaurora/borealis": "^1.0",
+                "shipaurora/borealis": "^1.0.9",
                 "spatie/image": "^3.9",
                 "spatie/laravel-medialibrary": "^11.23",
                 "spatie/laravel-passkeys": "^1.8",
@@ -7599,6 +7599,9 @@
                 "usamamuneerchaudhary/filament-command-palette": "^2.0",
                 "wallacemartinss/filament-icon-picker": "^2.0",
                 "webonyx/graphql-php": "^15.38"
+            },
+            "conflict": {
+                "shipaurora/minimal": "<1.0.9"
             },
             "require-dev": {
                 "brianium/paratest": "^7.20",
@@ -7660,20 +7663,20 @@
                 "issues": "https://github.com/shipaurora/cms/issues",
                 "source": "https://github.com/shipaurora/cms"
             },
-            "time": "2026-10-26T14:27:12+00:00"
+            "time": "2026-10-26T14:43:54+00:00"
         },
         {
             "name": "shipaurora/minimal",
-            "version": "v1.0.9",
+            "version": "v1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/minimal.git",
-                "reference": "463c5aaca122463259728f3920ed059beee3d274"
+                "reference": "bb0ae839b0da018b2c236df08cff4edea6dd59f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/minimal/zipball/463c5aaca122463259728f3920ed059beee3d274",
-                "reference": "463c5aaca122463259728f3920ed059beee3d274",
+                "url": "https://api.github.com/repos/shipaurora/minimal/zipball/bb0ae839b0da018b2c236df08cff4edea6dd59f3",
+                "reference": "bb0ae839b0da018b2c236df08cff4edea6dd59f3",
                 "shasum": ""
             },
             "require": {
@@ -7730,7 +7733,7 @@
                 "issues": "https://github.com/shipaurora/minimal/issues",
                 "source": "https://github.com/shipaurora/minimal"
             },
-            "time": "2026-10-26T14:12:47+00:00"
+            "time": "2026-10-26T14:46:00+00:00"
         },
         {
             "name": "spatie/image",
@@ -12356,16 +12359,16 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v5.7.0",
+            "version": "v5.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpdotenv/phpdotenv.git",
-                "reference": "301c07936b16d88628b126b01d082ba153cf4c40"
+                "reference": "96149103e62ac67e915f6d2ef59b72dee2e011e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpdotenv/phpdotenv/zipball/301c07936b16d88628b126b01d082ba153cf4c40",
-                "reference": "301c07936b16d88628b126b01d082ba153cf4c40",
+                "url": "https://api.github.com/repos/phpdotenv/phpdotenv/zipball/96149103e62ac67e915f6d2ef59b72dee2e011e0",
+                "reference": "96149103e62ac67e915f6d2ef59b72dee2e011e0",
                 "shasum": ""
             },
             "require": {
@@ -12392,7 +12395,7 @@
                     "forward-command": false
                 },
                 "branch-alias": {
-                    "dev-master": "5.6-dev"
+                    "dev-master": "5.8-dev"
                 }
             },
             "autoload": {
@@ -12423,8 +12426,8 @@
                 "environment"
             ],
             "support": {
-                "issues": "https://github.com/vlucas/phpdotenv/issues",
-                "source": "https://github.com/vlucas/phpdotenv/tree/v5.7.0"
+                "issues": "https://github.com/phpdotenv/phpdotenv/issues",
+                "source": "https://github.com/phpdotenv/phpdotenv/tree/v5.8.0"
             },
             "funding": [
                 {
@@ -12436,7 +12439,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-24T18:07:49+00:00"
+            "time": "2026-10-25T16:26:19+00:00"
         },
         {
             "name": "voku/portable-ascii",
