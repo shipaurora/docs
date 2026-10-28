@@ -635,19 +635,23 @@ PHP, 'php', 'app/Providers/AppServiceProvider.php'),
     protected function blocksForWebsiteScreens(): array
     {
         return $this->doc('website-screens', [
-            B::rich('<p>A website often has more than pages: events, products, a team. Its own models and Filament screens join Aurora\'s admin from a service provider, through <code>Aurora\Support\AdminPanel</code>.</p><h2>Admin screens [since 1.2.0]</h2>'),
+            B::rich('<p>A website often has more than pages: events, products, a team. Its own models and Filament screens join Aurora\'s admin through <code>Aurora\Support\AdminPanel</code>, in a service provider\'s <code>register()</code> method. Not in <code>boot()</code>: Aurora\'s admin panel is built while the app\'s providers boot, before the app\'s own <code>boot()</code> runs, so screens and groups added there never show.</p><h2>Admin screens [since 1.2.0]</h2>'),
             B::code(<<<'PHP'
 use Aurora\Support\AdminPanel;
 
-// Every resource and page in a folder and its subfolders…
-AdminPanel::discover(app_path('Filament/Resources'), 'App\Filament\Resources', perSite: true);
+// In register(), not boot(): the admin panel is built before the app's boot() runs.
+public function register(): void
+{
+    // Every resource and page in a folder and its subfolders…
+    AdminPanel::discover(app_path('Filament/Resources'), 'App\Filament\Resources', perSite: true);
 
-// …or name them.
-AdminPanel::resources([EventResource::class], perSite: true);
-AdminPanel::pages([Reports::class]);
+    // …or name them.
+    AdminPanel::resources([EventResource::class], perSite: true);
+    AdminPanel::pages([Reports::class]);
 
-// A sidebar group of their own: after Content, or after: 'AI', or after one of yours.
-AdminPanel::navigationGroup('Events', fn (): string => __('Events'));
+    // A sidebar group of their own: after Content, or after: 'AI', or after one of yours.
+    AdminPanel::navigationGroup('Events', fn (): string => __('Events'));
+}
 PHP, 'php', 'app/Providers/AppServiceProvider.php'),
             B::rich('<ul><li><strong>Groups</strong>: a resource joins a group by its <code>$navigationGroup</code> name (<code>\'Events\'</code> above). Groups after the same one keep the order they\'re registered in.</li><li><strong>Each site\'s own records</strong>: the admin is per site (<code>/admin/{site}/…</code>). A website\'s resources show every site\'s records, unless they\'re registered with <code>perSite: true</code>, for a model with a <code>site</code> relation.</li><li><strong>Labels</strong>: name screens and fields with <code>__()</code>. A line in the app\'s <code>lang/{locale}.json</code> is the label straight away, and beats Aurora\'s own; only what\'s edited under Translations beats the app\'s file.</li></ul><h2>Published like a page [since 1.2.0]</h2><p>A model that is drafted, scheduled and published like a page uses <code>Aurora\Models\Concerns\HasPublishing</code>, with its columns in the migration:</p>'),
             B::code(<<<'PHP'
@@ -691,17 +695,20 @@ public static function table(Table $table): Table
         ->filters([Publishing::filter()]);
 }
 PHP, 'php', 'app/Filament/Resources/EventResource.php'),
-            B::rich('<h2>Menu panels [since 1.2.0]</h2><p>The menu editor offers pages and custom links. Add panels for the website\'s own addresses with <code>Menus::panels()</code>: a <code>StaticMenuPanel</code> of fixed links, or a <code>ModelMenuPanel</code> for a model that implements <code>MenuPanelable</code>.</p>'),
+            B::rich('<h2>Menu panels [since 1.2.0]</h2><p>The menu editor offers pages and custom links. Add panels for the website\'s own addresses with <code>Menus::panels()</code>: a <code>StaticMenuPanel</code> of fixed links, or a <code>ModelMenuPanel</code> for a model that implements <code>MenuPanelable</code>. Like admin screens, they go in a service provider\'s <code>register()</code> method: the menu editor gets its panels when the admin panel is built.</p>'),
             B::code(<<<'PHP'
 use Aurora\Support\Menus;
 use Datlechin\FilamentMenuBuilder\MenuPanel\StaticMenuPanel;
 
-Menus::panels([
-    StaticMenuPanel::make(__('Website'))->add(__('Events'), '/events'),
-]);
+public function register(): void
+{
+    Menus::panels([
+        StaticMenuPanel::make(__('Website'))->add(__('Events'), '/events'),
+    ]);
 
-// /events is in every language, under its prefix: in Norwegian the link goes to /no/events.
-Menus::localized(['/events']);
+    // /events is in every language, under its prefix: in Norwegian the link goes to /no/events.
+    Menus::localized(['/events']);
+}
 PHP, 'php', 'app/Providers/AppServiceProvider.php'),
             $this->seeAlso(['routing' => 'Routes of your own', 'your-own-settings' => 'Your own settings']),
         ]);
