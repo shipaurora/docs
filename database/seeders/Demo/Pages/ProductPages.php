@@ -16,7 +16,7 @@ trait ProductPages
             ['type' => 'hero', 'data' => [
                 'layout' => 'centered',
                 'badge' => 'New',
-                'badge_text' => 'Aurora 1.2 is out',
+                'badge_text' => 'Aurora 1.3 is out',
                 'headline' => 'The CMS your editors *enjoy* and your developers trust',
                 'subheadline' => "Aurora is a content management system for Laravel, built on Filament.\nEditors compose pages visually on the real design. Developers keep plain Laravel. AI assistants work with exactly the permissions of the person using them.",
                 'primary_label' => 'Read the docs',
