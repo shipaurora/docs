@@ -7558,16 +7558,16 @@
         },
         {
             "name": "shipaurora/cms",
-            "version": "v1.3.0",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/cms.git",
-                "reference": "769c07a298b56be7a49fec0aa65255b70c8d7a35"
+                "reference": "8a7e8ba05781ddee8cbc6031a7206b31b61ed1d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/cms/zipball/769c07a298b56be7a49fec0aa65255b70c8d7a35",
-                "reference": "769c07a298b56be7a49fec0aa65255b70c8d7a35",
+                "url": "https://api.github.com/repos/shipaurora/cms/zipball/8a7e8ba05781ddee8cbc6031a7206b31b61ed1d0",
+                "reference": "8a7e8ba05781ddee8cbc6031a7206b31b61ed1d0",
                 "shasum": ""
             },
             "require": {
@@ -7614,6 +7614,9 @@
                 "mockery/mockery": "^1.6",
                 "orchestra/testbench": "^11.3",
                 "phpunit/phpunit": "^12.5.12"
+            },
+            "suggest": {
+                "spatie/browsershot": "Lets AI apps take the blocks' screenshots over MCP (generate_block_screenshots) and aurora:block-previews --generate take them itself; needs Chrome or Chromium"
             },
             "type": "library",
             "extra": {
@@ -7667,7 +7670,7 @@
                 "issues": "https://github.com/shipaurora/cms/issues",
                 "source": "https://github.com/shipaurora/cms"
             },
-            "time": "2026-10-28T11:24:12+00:00"
+            "time": "2026-10-28T11:57:32+00:00"
         },
         {
             "name": "shipaurora/minimal",
