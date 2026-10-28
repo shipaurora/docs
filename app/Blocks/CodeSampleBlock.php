@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Editable;
 use Filament\Forms\Components\CodeEditor;
@@ -18,8 +17,6 @@ use Filament\Schemas\Components\Utilities\Get;
  */
 class CodeSampleBlock extends Block
 {
-    use HasPreviewImage;
-
     /**
      * Language => [label, the editor's highlighting].
      *

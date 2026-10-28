@@ -2,15 +2,12 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Filament\Forms\Components\AssetPicker;
 use Filament\Forms\Components\ToggleButtons;
 
 class GalleryBlock extends Block
 {
-    use HasPreviewImage;
-
     public static function type(): string
     {
         return 'gallery';

@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Editable;
 use Aurora\Blocks\Fields;
@@ -12,8 +11,6 @@ use Filament\Schemas\Components\Grid;
 
 class ButtonBlock extends Block
 {
-    use HasPreviewImage;
-
     public const VARIANTS = ['primary' => 'Primary', 'secondary' => 'Secondary', 'outline' => 'Outline', 'ghost' => 'Ghost', 'link' => 'Text link'];
 
     public static function type(): string

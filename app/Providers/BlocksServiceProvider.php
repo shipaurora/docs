@@ -27,7 +27,6 @@ use App\Blocks\StepsBlock;
 use App\Blocks\TabsBlock;
 use App\Blocks\TeamMemberBlock;
 use App\Blocks\TestimonialBlock;
-use App\Http\Controllers\BlockPreviewController;
 use App\Support\SinceBadge;
 use Aurora\Blocks\Blocks;
 use Aurora\Models\Page;
@@ -44,7 +43,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -90,11 +88,6 @@ class BlocksServiceProvider extends ServiceProvider
 
         // [since 1.2.4] in the docs: the Aurora release a feature needs.
         SinceBadge::register();
-
-        // The blocks' pictures for the visual editor's block list (Concerns\HasPreviewImage).
-        Route::middleware('web')->get('aurora/blocks/{type}.webp', BlockPreviewController::class)
-            ->where('type', '[a-z0-9-]+')
-            ->name('aurora.blocks.preview');
     }
 
     /**

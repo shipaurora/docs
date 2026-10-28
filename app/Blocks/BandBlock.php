@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Contracts\Container;
 use Aurora\Filament\Forms\Components\AssetPicker;
@@ -13,8 +12,6 @@ use Filament\Schemas\Components\Utilities\Get;
 
 class BandBlock extends Block implements Container
 {
-    use HasPreviewImage;
-
     public const BACKGROUNDS = [
         'white' => 'White',
         'muted' => 'Soft grey',

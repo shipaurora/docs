@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Editable;
 use Aurora\Blocks\Fields;
@@ -15,8 +14,6 @@ use Filament\Schemas\Components\Utilities\Get;
 
 class HeroBlock extends Block
 {
-    use HasPreviewImage;
-
     public const LAYOUTS = ['centered' => 'Centred', 'split' => 'Text + image', 'cover' => 'Full-bleed image'];
 
     public static function type(): string

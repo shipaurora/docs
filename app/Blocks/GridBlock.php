@@ -2,15 +2,12 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Contracts\Container;
 use Filament\Forms\Components\ToggleButtons;
 
 class GridBlock extends Block implements Container
 {
-    use HasPreviewImage;
-
     public static function type(): string
     {
         return 'grid';

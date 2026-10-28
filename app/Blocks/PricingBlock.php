@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Editable;
 use Aurora\Blocks\Fields;
@@ -16,8 +15,6 @@ use Filament\Schemas\Components\Utilities\Get;
 
 class PricingBlock extends Block
 {
-    use HasPreviewImage;
-
     public static function type(): string
     {
         return 'pricing';

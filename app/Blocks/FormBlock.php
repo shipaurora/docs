@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Models\Form;
 use Filament\Forms\Components\Select;
@@ -10,8 +9,6 @@ use Filament\Forms\Components\ToggleButtons;
 
 class FormBlock extends Block
 {
-    use HasPreviewImage;
-
     public static function type(): string
     {
         return 'form';

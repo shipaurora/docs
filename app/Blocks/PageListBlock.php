@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Editable;
 use Aurora\Models\Page;
@@ -13,8 +12,6 @@ use Filament\Schemas\Components\Utilities\Get;
 
 class PageListBlock extends Block
 {
-    use HasPreviewImage;
-
     public static function type(): string
     {
         return 'page-list';

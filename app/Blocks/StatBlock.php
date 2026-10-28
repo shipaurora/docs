@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Editable;
 use Filament\Forms\Components\TextInput;
@@ -11,8 +10,6 @@ use Filament\Schemas\Components\Grid;
 
 class StatBlock extends Block
 {
-    use HasPreviewImage;
-
     public static function type(): string
     {
         return 'stat';

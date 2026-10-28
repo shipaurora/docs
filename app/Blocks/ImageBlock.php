@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Editable;
 use Aurora\Filament\Forms\Components\AssetPicker;
@@ -12,8 +11,6 @@ use Filament\Forms\Components\ToggleButtons;
 
 class ImageBlock extends Block
 {
-    use HasPreviewImage;
-
     public static function type(): string
     {
         return 'image';

@@ -2,7 +2,6 @@
 
 namespace App\Blocks;
 
-use App\Blocks\Concerns\HasPreviewImage;
 use Aurora\Blocks\Block;
 use Aurora\Blocks\Editable;
 use Filament\Forms\Components\RichEditor;
@@ -10,8 +9,6 @@ use Filament\Forms\Components\ToggleButtons;
 
 class RichTextBlock extends Block
 {
-    use HasPreviewImage;
-
     public static function type(): string
     {
         return 'rich-text';

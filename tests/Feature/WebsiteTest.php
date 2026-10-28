@@ -65,18 +65,23 @@ class WebsiteTest extends TestCase
 
     public function test_the_block_library_offers_a_screenshot_of_each_of_its_blocks(): void
     {
+        // Each one from resources/block-previews, found by Aurora on its own.
+        foreach (array_keys(Blocks::all()) as $type) {
+            $this->assertNotNull(Blocks::find($type)::preview(), "The {$type} block has no screenshot in resources/block-previews.");
+        }
+
         $hero = Blocks::find('hero')::preview();
-        $this->assertStringContainsString('/aurora/blocks/hero.webp', $hero);
+        $this->assertStringContainsString('/aurora/blocks/hero/screenshot', $hero);
 
         // Only for people who may edit pages: not visitors, nor viewers.
-        $this->get($hero)->assertForbidden();
+        $this->get($hero)->assertRedirect();
         $this->actingAs($this->userWithRole('Viewer'))->get($hero)->assertForbidden();
 
         $this->actingAs($this->userWithRole('Author'))
             ->get($hero)
             ->assertOk()
             ->assertHeader('Content-Type', 'image/webp');
-        $this->get('/aurora/blocks/nope.webp')->assertNotFound();
+        $this->get('/aurora/blocks/nope/screenshot')->assertNotFound();
     }
 
     public function test_the_minimal_theme_is_one_more_to_pick(): void
