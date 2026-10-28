@@ -337,6 +337,156 @@ TEXT, 'text'),
             B::rich('<h2>Submissions</h2><ul><li>Statuses New, Read, Archived and Spam; reply by email; bulk status changes; export to CSV.</li><li>Uploaded files are served through signed links.</li><li>The sidebar badge counts new submissions, and everyone who handles forms is notified.</li></ul>'),
             $this->screenshot('submissions', 'Submissions, ready to read, reply to, archive or export.'),
             B::rich('<h2>Spam protection</h2><p>A honeypot field, a minimum fill time and a rate limit. Spam is kept, marked as spam, and sends no notifications.</p><h2>On the website</h2><p>Place a form with the <em>Form</em> block. Submissions work without JavaScript: they\'re a plain POST to <code>/forms/{form}</code> with server-side validation, and messages and old input come back to the page. Conditional fields are shown and hidden in the browser and checked again on the server. Deleting a form warns which live pages use it.</p><p>To send submissions anywhere else, listen for <code>Aurora\Events\FormSubmitted</code> or add a webhook.</p>'),
+            B::rich('<h2>Field types of your own</h2><p>A website or a package can add field types to the form builder [since 1.3.11]: a captcha, an address picker, a booking slot. A field type is a class extending <code>Aurora\\Forms\\FieldType</code>, registered in a service provider\'s <code>boot()</code>. Editors then add it to forms like any other field, and every form keeps working if the type is removed later: its fields become short text.</p><ul><li><strong>In the form builder</strong>: its name, icon and settings of its own (<code>settings()</code>), stored with the field.</li><li><strong>Checked first</strong>: its <code>rules()</code> run before anything is kept, so a failed captcha sends the visitor back to the form with the error.</li><li><strong>Kept, or not</strong>: <code>stores()</code> says whether its answer is kept, and <code>value()</code> how; a captcha\'s answer isn\'t.</li><li><strong>On the website</strong>: <code>render()</code> draws its control, and <code>scripts()</code> lists scripts loaded once per page. A website\'s form view hands any type that isn\'t Aurora\'s own to <code>&lt;x-aurora::form-field&gt;</code>, which does both.</li><li><strong>Kept private</strong>: only the settings in <code>publicData()</code> reach the website and the APIs, so a secret never does. Keep keys in a settings tab or in <code>config/services.php</code>.</li></ul><h3>Example: Cloudflare Turnstile</h3><p>A captcha that checks the visitor\'s token with Cloudflare before the submission is kept. The site key and secret come from Cloudflare\'s dashboard.</p>'),
+            B::code(<<<'PHP'
+namespace App\Forms;
+
+use Aurora\Forms\FieldType;
+use Closure;
+use Illuminate\Support\Facades\Http;
+
+class Turnstile extends FieldType
+{
+    public static function type(): string
+    {
+        return 'turnstile';
+    }
+
+    public static function label(): string
+    {
+        return __('Captcha (Turnstile)');
+    }
+
+    public static function icon(): string
+    {
+        return 'phosphor-shield-check';
+    }
+
+    public static function requiredByDefault(): bool
+    {
+        return true;
+    }
+
+    // Checked with Cloudflare before anything is kept.
+    public static function rules(array $field): array
+    {
+        return ['required', function (string $attribute, mixed $token, Closure $fail): void {
+            $result = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                'secret' => config('services.turnstile.secret'),
+                'response' => $token,
+                'remoteip' => request()->ip(),
+            ]);
+
+            if (! $result->json('success')) {
+                $fail(__('Please confirm you are human.'));
+            }
+        }];
+    }
+
+    // A captcha's answer is a token, not something to keep.
+    public static function stores(): bool
+    {
+        return false;
+    }
+
+    public static function translatable(): array
+    {
+        return [];
+    }
+
+    public static function labelled(): bool
+    {
+        return false;
+    }
+
+    // Turnstile sends its token as the field's own input (data-response-field-name).
+    public static function render(array $field, string $id, string $attributes): string
+    {
+        return sprintf(
+            '<div id="%s" class="cf-turnstile" data-sitekey="%s" data-response-field-name="%s"></div>',
+            e($id),
+            e(config('services.turnstile.key')),
+            e($field['name']),
+        );
+    }
+
+    public static function scripts(): array
+    {
+        return ['https://challenges.cloudflare.com/turnstile/v0/api.js'];
+    }
+}
+PHP, 'php', 'app/Forms/Turnstile.php'),
+            B::code(<<<'PHP'
+use App\Forms\Turnstile;
+use Aurora\Support\FormFields;
+
+public function boot(): void
+{
+    FormFields::register([Turnstile::class]);
+}
+
+// config/services.php
+'turnstile' => [
+    'key' => env('TURNSTILE_SITE_KEY'),
+    'secret' => env('TURNSTILE_SECRET_KEY'),
+],
+PHP, 'php', 'app/Providers/AppServiceProvider.php'),
+            B::rich('<h3>Example: an address picker</h3><p>A text field that suggests addresses from Google Places as the visitor types, and keeps the address as text. Its setting limits the suggestions to a country, and the website may see it.</p>'),
+            B::code(<<<'PHP'
+namespace App\Forms;
+
+use Aurora\Forms\Fields\Text;
+use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Vite;
+
+// A short text field with suggestions: placeholder, rules and storing come from Text.
+class AddressPicker extends Text
+{
+    public static function type(): string
+    {
+        return 'address';
+    }
+
+    public static function label(): string
+    {
+        return __('Address');
+    }
+
+    public static function icon(): string
+    {
+        return 'phosphor-map-pin';
+    }
+
+    public static function settings(): array
+    {
+        return [
+            ...parent::settings(),
+            TextInput::make('country')->label(__('Country'))->placeholder('no')->maxLength(2),
+        ];
+    }
+
+    public static function publicData(): array
+    {
+        return [...parent::publicData(), 'country'];
+    }
+
+    public static function render(array $field, string $id, string $attributes): string
+    {
+        return sprintf(
+            '<input type="text" %s data-address-picker data-country="%s" placeholder="%s" autocomplete="off" class="block w-full rounded-xl px-4 py-3 ring-1 ring-zinc-300">',
+            $attributes,
+            e($field['data']['country'] ?? ''),
+            e($field['data']['placeholder'] ?? ''),
+        );
+    }
+
+    // Loads Google's script with the key and turns every [data-address-picker] into an autocomplete.
+    public static function scripts(): array
+    {
+        return [Vite::asset('resources/js/address-picker.js')];
+    }
+}
+PHP, 'php', 'app/Forms/AddressPicker.php'),
             $this->seeAlso(['webhooks' => 'Webhooks and events']),
         ]);
     }
@@ -651,9 +801,34 @@ public function register(): void
 
     // A sidebar group of their own: after Content, or after: 'AI', or after one of yours.
     AdminPanel::navigationGroup('Events', fn (): string => __('Events'));
+
+    // Dashboard widgets, yours or a package's [since 1.3.11].
+    AdminPanel::widgets([UpcomingEvents::class]);
 }
 PHP, 'php', 'app/Providers/AppServiceProvider.php'),
             B::rich('<ul><li><strong>Groups</strong>: a resource joins a group by its <code>$navigationGroup</code> name (<code>\'Events\'</code> above). Groups after the same one keep the order they\'re registered in.</li><li><strong>Each site\'s own records</strong>: the admin is per site (<code>/admin/{site}/…</code>). A website\'s resources show every site\'s records, unless they\'re registered with <code>perSite: true</code>, for a model with a <code>site</code> relation.</li><li><strong>Labels</strong>: name screens and fields with <code>__()</code>. A line in the app\'s <code>lang/{locale}.json</code> is the label straight away, and beats Aurora\'s own; only what\'s edited under Translations beats the app\'s file.</li></ul><h2>Published like a page [since 1.2.0]</h2><p>A model that is drafted, scheduled and published like a page uses <code>Aurora\Models\Concerns\HasPublishing</code>, with its columns in the migration:</p>'),
+            B::rich('<h2>Dashboard widgets</h2><p>Any Filament widget can go on the dashboard [since 1.3.11]: one of the website\'s own (<code>php artisan make:filament-widget</code>) or one from a package. Register it with <code>AdminPanel::widgets()</code> as above, or let <code>AdminPanel::discover()</code> find it in a folder. Everyone can then add it to their own dashboard under <em>Customise dashboard</em>, as often as they like, and a new widget shows at the end of everyone\'s dashboard once.</p><ul><li><strong>Its place</strong> in the default layout is its <code>$sort</code>, and its default size its <code>$columnSpan</code>: <code>\'full\'</code> is large, 2 is medium, 1 is small.</li><li><strong>Who sees it</strong> is its <code>canView()</code>: a widget someone may not see is never on their dashboard.</li><li><strong>Its name</strong> in the customise view is its static <code>getDashboardLabel()</code>, with a sentence from <code>getDashboardDescription()</code>; without them it\'s named after its class.</li></ul>'),
+            B::code(<<<'PHP'
+use Filament\Widgets\StatsOverviewWidget;
+
+class UpcomingEvents extends StatsOverviewWidget
+{
+    protected static ?int $sort = 1;
+
+    protected int|string|array $columnSpan = 1;
+
+    // Its name and sentence under "Customise dashboard".
+    public static function getDashboardLabel(): string
+    {
+        return __('Upcoming events');
+    }
+
+    public static function getDashboardDescription(): string
+    {
+        return __('Events in the next 30 days, and how many have signed up.');
+    }
+}
+PHP, 'php', 'app/Filament/Widgets/UpcomingEvents.php'),
             B::code(<<<'PHP'
 use Aurora\Models\Concerns\HasPublishing;
 
