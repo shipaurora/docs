@@ -16,7 +16,7 @@ trait GuidePages
                 B::heading('Guides', 'Learn by doing', 'Short, practical how-tos for editors and developers. Each one takes about ten minutes.', 'xl', 'left', 'h1'),
             ], 'brand-soft', 'lg', 'wide'),
             B::band([
-                ['type' => 'page-list', 'data' => ['source' => 'selected', 'page_ids' => [$this->id('build-a-landing-page'), $this->id('let-claude-draft-a-page'), $this->id('add-your-own-block'), $this->id('run-several-sites'), $this->id('move-from-statamic')], 'link_label' => 'Read the guide']],
+                ['type' => 'page-list', 'data' => ['source' => 'selected', 'page_ids' => [$this->id('build-a-landing-page'), $this->id('let-claude-draft-a-page'), $this->id('add-your-own-block'), $this->id('run-several-sites'), $this->id('move-from-statamic'), $this->id('move-from-netflex')], 'link_label' => 'Read the guide']],
             ], 'white', 'xl', 'wide'),
             B::band([
                 ['type' => 'cta', 'data' => ['style' => 'light', 'title' => 'Looking for the reference?', 'text' => 'The docs explain every part of Aurora, in order.', 'button_label' => 'Open the docs', 'button_type' => 'page', 'button_page' => $this->id('docs')]],
@@ -126,6 +126,23 @@ BLADE, 'blade', 'resources/views/components/blocks/quote-with-photo.blade.php'),
         ]);
     }
 
+    protected function blocksForMoveFromNetflex(): array
+    {
+        return $this->guide('move-from-netflex', 'Move a *Netflex* site to Aurora', 'demo/workspace.jpg', [
+            B::rich('<p>A Netflex website is a Laravel app whose content lives in Netflex\'s API: its pages and their blocks, its structures, its files and its labels. It moves to Aurora as a new Aurora site that reads all of that from the API, with the old project beside it as the reference for every template and component. An AI coding assistant can do most of the work: Aurora comes with a skill that knows the way.</p><h2>1. Make the new site</h2><p>You need PHP 8.4, Aurora 1.3.6 or later, and the Netflex project checked out. Make the new site next to it:</p>'),
+            B::code('composer create-project shipaurora/aurora new-site', 'bash'),
+            B::rich('<p>Say no when it offers to run the starter\'s seeders: the homepage comes from Netflex. Then give the new site the old one\'s API keys, from the Netflex project\'s <code>.env</code>. The import only reads with them; it never changes anything on the Netflex site.</p>'),
+            B::code("NETFLEX_URI=…\nNETFLEX_PUBLIC_KEY=…\nNETFLEX_PRIVATE_KEY=…", 'text', '.env'),
+            B::rich('<h2>2. Ask your AI coding assistant</h2><p>The starter app comes with Aurora\'s skills for Claude Code, Cursor and the other coding assistants. In the new site, ask:</p>'),
+            B::code('Port the Netflex site in ../old-site to Aurora CMS.', 'text'),
+            B::rich('<p>The <code>aurora-netflex</code> skill takes it from there, step by step, and asks where the website needs a decision of yours:</p><ul><li><strong>Page templates and layouts</strong> become Aurora layouts, in the Blade they were.</li><li><strong>Builder components</strong> become blocks. Netflex keeps no list of a component\'s fields, so the skill works them out from its editor buttons and inline areas.</li><li><strong>Pages</strong> come across with their tree, their addresses and each block\'s content, read from the API.</li><li><strong>Structures</strong>, such as news, events or staff, become models of the site\'s own with a screen in the admin and blocks that pick or list them.</li><li><strong>Global content</strong> becomes a settings tab, <strong>labels</strong> the site\'s translation files, and the page tree\'s <strong>navigation</strong> menus.</li><li><strong>Files</strong> go into the media library with their alt text, and Netflex\'s <strong>redirects</strong> and the addresses that change become redirects.</li><li><strong>Languages</strong>: Netflex keeps a page tree for each, without linking a page to its translation. The skill suggests which pages pair up, and once you\'ve confirmed them, they become each page\'s translations.</li></ul><p>Commerce, newsletters, customer logins and Netflex admin extensions have nothing to move into in Aurora: the skill lists what the site uses of them and asks what each should become.</p><h2>3. Check it in the visual editor</h2><p>The content comes across with an artisan command of the site\'s own, which updates what it made the last time instead of adding doubles. Run it as often as you need, open the pages under <code>/admin</code> and compare them with the Netflex site until they look the same.</p><h2>4. Switch over</h2><p>Run the import one last time, after the editors\' last change in Netflex. Check the old addresses (on Netflex they end with a slash; a changed one gets a redirect), the forms, the menus and the labels in each language, then point the domain at the new site. Keep the Netflex site until nobody needs to compare, then take its keys out of <code>.env</code>.</p><h2>Without an AI assistant</h2><p>The steps are the same by hand. The skill, <code>vendor/shipaurora/cms/resources/boost/skills/aurora-netflex/SKILL.md</code>, has the map from each part of Netflex to Aurora, the API calls that read it and where each kind of field keeps its value.</p>'),
+            B::buttons([
+                B::button('Read: creating blocks', $this->id('creating-blocks'), 'outline', icon: 'book-open'),
+                B::button('Read: layouts', $this->id('layouts'), 'outline', icon: 'book-open'),
+            ]),
+        ]);
+    }
+
     /**
      * A guide: its title over an image, the steps, and the other guides.
      *
@@ -144,7 +161,7 @@ BLADE, 'blade', 'resources/views/components/blocks/quote-with-photo.blade.php'),
                 B::heading('More guides', null, null, 'md'),
                 B::spacer('sm'),
                 ['type' => 'page-list', 'data' => ['source' => 'selected', 'page_ids' => array_values(array_filter([
-                    $this->id('build-a-landing-page'), $this->id('let-claude-draft-a-page'), $this->id('add-your-own-block'), $this->id('run-several-sites'), $this->id('move-from-statamic'),
+                    $this->id('build-a-landing-page'), $this->id('let-claude-draft-a-page'), $this->id('add-your-own-block'), $this->id('run-several-sites'), $this->id('move-from-statamic'), $this->id('move-from-netflex'),
                 ], fn (?string $id) => $id !== $this->ids[$current])), 'link_label' => 'Read the guide']],
             ], 'muted', 'lg', 'wide'),
         ];

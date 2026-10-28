@@ -118,7 +118,7 @@ class PageSeeder extends Seeder
      * @var array<string, array<int, string>>
      */
     protected const PARENTS = [
-        'guides' => ['build-a-landing-page', 'let-claude-draft-a-page', 'add-your-own-block', 'run-several-sites', 'move-from-statamic'],
+        'guides' => ['build-a-landing-page', 'let-claude-draft-a-page', 'add-your-own-block', 'run-several-sites', 'move-from-statamic', 'move-from-netflex'],
         'legal' => ['privacy', 'terms'],
     ];
 
@@ -160,6 +160,7 @@ class PageSeeder extends Seeder
             ['add-your-own-block', 'Add your own block', 'standard', PageStatus::Published, $admin, 'Make a block with one command: a PHP class, a Blade view and the helpers that render it.'],
             ['run-several-sites', 'Run several websites from one admin', 'standard', PageStatus::Published, $admin, 'Domains, languages and people for more than one website.'],
             ['move-from-statamic', 'Move a Statamic site to Aurora', 'standard', PageStatus::Published, $admin, 'Port a Statamic website in its own Laravel project: Aurora beside Statamic, the content brought across, then the switch.'],
+            ['move-from-netflex', 'Move a Netflex site to Aurora', 'standard', PageStatus::Published, $admin, 'Rebuild a Netflex website as a new Aurora site and bring its content across from the Netflex API.'],
             ['release-notes', 'Release notes', 'standard', PageStatus::Published, $admin, 'What changed in each version of Aurora.'],
             ['components', 'Component library', 'standard', PageStatus::Published, $admin, 'Every block this website is built with, on one page.'],
             ['contact', 'Contact', 'standard', PageStatus::Published, $admin, 'Questions about Aurora, or a demo for your team.'],
@@ -187,6 +188,7 @@ class PageSeeder extends Seeder
                     'add-your-own-block' => 'demo/workspace.jpg',
                     'run-several-sites' => 'demo/screen-languages.jpg',
                     'move-from-statamic' => 'demo/workspace.jpg',
+                    'move-from-netflex' => 'demo/workspace.jpg',
                     default => null,
                 }),
             ]));
