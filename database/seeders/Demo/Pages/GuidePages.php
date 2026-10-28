@@ -16,7 +16,7 @@ trait GuidePages
                 B::heading('Guides', 'Learn by doing', 'Short, practical how-tos for editors and developers. Each one takes about ten minutes.', 'xl', 'left', 'h1'),
             ], 'brand-soft', 'lg', 'wide'),
             B::band([
-                ['type' => 'page-list', 'data' => ['source' => 'selected', 'page_ids' => [$this->id('build-a-landing-page'), $this->id('let-claude-draft-a-page'), $this->id('add-your-own-block'), $this->id('run-several-sites')], 'link_label' => 'Read the guide']],
+                ['type' => 'page-list', 'data' => ['source' => 'selected', 'page_ids' => [$this->id('build-a-landing-page'), $this->id('let-claude-draft-a-page'), $this->id('add-your-own-block'), $this->id('run-several-sites'), $this->id('move-from-statamic')], 'link_label' => 'Read the guide']],
             ], 'white', 'xl', 'wide'),
             B::band([
                 ['type' => 'cta', 'data' => ['style' => 'light', 'title' => 'Looking for the reference?', 'text' => 'The docs explain every part of Aurora, in order.', 'button_label' => 'Open the docs', 'button_type' => 'page', 'button_page' => $this->id('docs')]],
@@ -109,6 +109,23 @@ BLADE, 'blade', 'resources/views/components/blocks/quote-with-photo.blade.php'),
         ]);
     }
 
+    protected function blocksForMoveFromStatamic(): array
+    {
+        return $this->guide('move-from-statamic', 'Move a *Statamic* site to Aurora', 'demo/workspace.jpg', [
+            B::rich('<p>Statamic and Aurora are both Laravel packages, so a Statamic website moves to Aurora inside its own project. Aurora is installed beside Statamic, the website is rebuilt on Aurora while Statamic keeps serving it, and Statamic goes once everything has come across. An AI coding assistant can do most of the work: Aurora comes with a skill that knows the way.</p><h2>1. Install Aurora beside Statamic</h2><p>You need Statamic 6 on Laravel 13 and PHP 8.4, and Aurora 1.3.4 or later. Work on a branch of the project.</p>'),
+            B::code("composer require shipaurora/cms\nphp artisan aurora:install\nphp artisan boost:install   # choose shipaurora/cms when it asks", 'bash'),
+            B::rich('<p>Statamic\'s control panel stays at <code>/cp</code>, and Aurora\'s admin is at <code>/admin</code>. While Statamic\'s routes are on, Statamic keeps serving the website, and you see the Aurora pages in its visual editor. If Statamic keeps its users in the database (the <code>eloquent</code> repository in <code>config/statamic/users.php</code>), check first: Aurora gives the <code>users</code> table UUID keys. With the default file users, nothing clashes.</p><h2>2. Ask your AI coding assistant</h2><p>Boost has installed Aurora\'s skills for Claude Code, Cursor and the other coding assistants. In the project, ask:</p>'),
+            B::code('Port this Statamic site to Aurora CMS.', 'text'),
+            B::rich('<p>The <code>aurora-statamic</code> skill takes it from there, step by step, and asks where the website needs a decision of yours:</p><ul><li><strong>Templates and layouts</strong> become Aurora layouts and block views in Blade, from the Antlers or Blade they were.</li><li><strong>Bard and Replicator sets</strong> become blocks, one for each set, and the text between them rich text blocks.</li><li><strong>Collections</strong> of pages become pages with the same tree and addresses; a blog\'s entries become pages under the blog; collections of records, such as a team, become models of the site\'s own with a screen in the admin and blocks that pick them.</li><li><strong>Globals</strong> become a settings tab, and <strong>navigation</strong> becomes menus.</li><li><strong>Assets</strong> go into the media library with their alt text and folders, and <strong>forms</strong> become Aurora forms.</li><li>A <strong>multi-site</strong> setup becomes Aurora\'s sites and languages, with each entry\'s localizations as the page\'s translations.</li></ul><h2>3. Check it in the visual editor</h2><p>The content comes across with an artisan command of the site\'s own, which updates what it made the last time instead of adding doubles. Run it as often as you need, open the pages under <code>/admin</code> and compare them with the Statamic site until they look the same.</p><h2>4. Switch over</h2><p>Run the import one last time, after the editors\' last change in Statamic, and turn Statamic\'s routes off. Aurora serves the website from then on, and <code>/cp</code> still works for comparing.</p>'),
+            B::code("'enabled' => false,", 'php', 'config/statamic/routes.php'),
+            B::rich('<p>Check the old addresses (a changed one gets a redirect), the forms and the menus. When nobody needs Statamic any more, remove it with <code>composer remove statamic/cms</code>, together with its files: <code>content/</code>, <code>resources/blueprints</code>, <code>resources/fieldsets</code>, <code>resources/forms</code>, <code>users/</code> and <code>config/statamic/</code>.</p><h2>Without an AI assistant</h2><p>The steps are the same by hand. The skill, <code>vendor/shipaurora/cms/resources/boost/skills/aurora-statamic/SKILL.md</code>, has the map from each part of Statamic to Aurora and the calls to Statamic\'s API that read it.</p>'),
+            B::buttons([
+                B::button('Read: creating blocks', $this->id('creating-blocks'), 'outline', icon: 'book-open'),
+                B::button('Read: layouts', $this->id('layouts'), 'outline', icon: 'book-open'),
+            ]),
+        ]);
+    }
+
     /**
      * A guide: its title over an image, the steps, and the other guides.
      *
@@ -127,7 +144,7 @@ BLADE, 'blade', 'resources/views/components/blocks/quote-with-photo.blade.php'),
                 B::heading('More guides', null, null, 'md'),
                 B::spacer('sm'),
                 ['type' => 'page-list', 'data' => ['source' => 'selected', 'page_ids' => array_values(array_filter([
-                    $this->id('build-a-landing-page'), $this->id('let-claude-draft-a-page'), $this->id('add-your-own-block'), $this->id('run-several-sites'),
+                    $this->id('build-a-landing-page'), $this->id('let-claude-draft-a-page'), $this->id('add-your-own-block'), $this->id('run-several-sites'), $this->id('move-from-statamic'),
                 ], fn (?string $id) => $id !== $this->ids[$current])), 'link_label' => 'Read the guide']],
             ], 'muted', 'lg', 'wide'),
         ];
