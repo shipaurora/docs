@@ -804,31 +804,12 @@ public function register(): void
 
     // Dashboard widgets, yours or a package's [since 1.3.11].
     AdminPanel::widgets([UpcomingEvents::class]);
+
+    // Filament plugins, yours or a package's [since 1.3.13].
+    AdminPanel::plugins([fn (): Plugin => ShopPlugin::make()]);
 }
 PHP, 'php', 'app/Providers/AppServiceProvider.php'),
             B::rich('<ul><li><strong>Groups</strong>: a resource joins a group by its <code>$navigationGroup</code> name (<code>\'Events\'</code> above). Groups after the same one keep the order they\'re registered in.</li><li><strong>Each site\'s own records</strong>: the admin is per site (<code>/admin/{site}/…</code>). A website\'s resources show every site\'s records, unless they\'re registered with <code>perSite: true</code>, for a model with a <code>site</code> relation.</li><li><strong>Labels</strong>: name screens and fields with <code>__()</code>. A line in the app\'s <code>lang/{locale}.json</code> is the label straight away, and beats Aurora\'s own; only what\'s edited under Translations beats the app\'s file.</li></ul><h2>Published like a page [since 1.2.0]</h2><p>A model that is drafted, scheduled and published like a page uses <code>Aurora\Models\Concerns\HasPublishing</code>, with its columns in the migration:</p>'),
-            B::rich('<h2>Dashboard widgets</h2><p>Any Filament widget can go on the dashboard [since 1.3.11]: one of the website\'s own (<code>php artisan make:filament-widget</code>) or one from a package. Register it with <code>AdminPanel::widgets()</code> as above, or let <code>AdminPanel::discover()</code> find it in a folder. Everyone can then add it to their own dashboard under <em>Customise dashboard</em>, as often as they like, and a new widget shows at the end of everyone\'s dashboard once.</p><ul><li><strong>Its place</strong> in the default layout is its <code>$sort</code>, and its default size its <code>$columnSpan</code>: <code>\'full\'</code> is large, 2 is medium, 1 is small.</li><li><strong>Who sees it</strong> is its <code>canView()</code>: a widget someone may not see is never on their dashboard.</li><li><strong>Its name</strong> in the customise view is its static <code>getDashboardLabel()</code>, with a sentence from <code>getDashboardDescription()</code>; without them it\'s named after its class.</li></ul>'),
-            B::code(<<<'PHP'
-use Filament\Widgets\StatsOverviewWidget;
-
-class UpcomingEvents extends StatsOverviewWidget
-{
-    protected static ?int $sort = 1;
-
-    protected int|string|array $columnSpan = 1;
-
-    // Its name and sentence under "Customise dashboard".
-    public static function getDashboardLabel(): string
-    {
-        return __('Upcoming events');
-    }
-
-    public static function getDashboardDescription(): string
-    {
-        return __('Events in the next 30 days, and how many have signed up.');
-    }
-}
-PHP, 'php', 'app/Filament/Widgets/UpcomingEvents.php'),
             B::code(<<<'PHP'
 use Aurora\Models\Concerns\HasPublishing;
 
@@ -870,6 +851,43 @@ public static function table(Table $table): Table
         ->filters([Publishing::filter()]);
 }
 PHP, 'php', 'app/Filament/Resources/EventResource.php'),
+            B::rich('<h2>Dashboard widgets</h2><p>Any Filament widget can go on the dashboard [since 1.3.11]: one of the website\'s own (<code>php artisan make:filament-widget</code>) or one from a package. Register it with <code>AdminPanel::widgets()</code> as above, or let <code>AdminPanel::discover()</code> find it in a folder. Everyone can then add it to their own dashboard under <em>Customise dashboard</em>, as often as they like, and a new widget shows at the end of everyone\'s dashboard once.</p><ul><li><strong>Its place</strong> in the default layout is its <code>$sort</code>, and its default size its <code>$columnSpan</code>: <code>\'full\'</code> is large, 2 is medium, 1 is small.</li><li><strong>Who sees it</strong> is its <code>canView()</code>: a widget someone may not see is never on their dashboard.</li><li><strong>Its name</strong> in the customise view is its static <code>getDashboardLabel()</code>, with a sentence from <code>getDashboardDescription()</code>; without them it\'s named after its class.</li></ul>'),
+            B::code(<<<'PHP'
+use Filament\Widgets\StatsOverviewWidget;
+
+class UpcomingEvents extends StatsOverviewWidget
+{
+    protected static ?int $sort = 1;
+
+    protected int|string|array $columnSpan = 1;
+
+    // Its name and sentence under "Customise dashboard".
+    public static function getDashboardLabel(): string
+    {
+        return __('Upcoming events');
+    }
+
+    public static function getDashboardDescription(): string
+    {
+        return __('Events in the next 30 days, and how many have signed up.');
+    }
+}
+PHP, 'php', 'app/Filament/Widgets/UpcomingEvents.php'),
+            B::rich('<h2>Filament plugins [since 1.3.13]</h2><p>A Filament plugin, a package\'s or the website\'s own, joins Aurora\'s admin with <code>AdminPanel::plugins()</code> in <code>register()</code>, without changing the admin panel or the starter app\'s providers. Give it as a closure to configure it when the panel is built.</p><ul><li><strong>Each site\'s own records</strong>: the resources a plugin brings show every site\'s records, unless it\'s registered with <code>perSite: true</code>, for models with a <code>site</code> relation.</li><li><strong>What fits</strong>: plugins that add resources, pages, widgets or fields. A plugin that registers a panel of its own, or changes Filament\'s defaults for every panel, doesn\'t belong in Aurora\'s admin.</li></ul>'),
+            B::code(<<<'PHP'
+use Aurora\Support\AdminPanel;
+use Filament\Contracts\Plugin;
+
+public function register(): void
+{
+    AdminPanel::plugins([
+        fn (): Plugin => ShopPlugin::make()->currency('NOK'),
+    ]);
+
+    // A plugin whose models belong to a site.
+    AdminPanel::plugins([BookingsPlugin::make()], perSite: true);
+}
+PHP, 'php', 'app/Providers/AppServiceProvider.php'),
             B::rich('<h2>Menu panels [since 1.2.0]</h2><p>The menu editor offers pages and custom links. Add panels for the website\'s own addresses with <code>Menus::panels()</code>: a <code>StaticMenuPanel</code> of fixed links, or a <code>ModelMenuPanel</code> for a model that implements <code>MenuPanelable</code>. Like admin screens, they go in a service provider\'s <code>register()</code> method: the menu editor gets its panels when the admin panel is built.</p>'),
             B::code(<<<'PHP'
 use Aurora\Support\Menus;
