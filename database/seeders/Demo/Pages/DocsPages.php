@@ -779,6 +779,26 @@ PHP, 'php', 'app/Providers/AppServiceProvider.php'),
             B::code("<p>{{ \\Aurora\\Models\\Setting::get('opening_hours') }}</p>", 'blade'),
             $this->note('Private unless you say so', 'Settings are private unless a tab lists them in publicKeys. Never list keys, tokens or anything visitors shouldn\'t see.', 'warning'),
             B::rich('<p>This website adds the Header and Footer tabs under Settings › Website this way: the header button, the announcement bar, the footer note and social profiles.</p>'),
+            B::rich('<h2>Where tabs go [since 1.3.15]</h2><p>Put a tab where editors would look for it, on a page Settings already has, rather than adding items to its side menu:</p><ul><li><strong>The website\'s own settings</strong> (its header, footer, opening hours): tabs on Website, <code>page: \'website\'</code>, one per section.</li><li><strong>A connection to another service</strong> (Mailchimp, Shopify, a booking system): a tab named after it on Integrations, <code>page: \'integrations\'</code>.</li><li><strong>An area of its own with several tabs</strong> (a shop\'s shipping, payments and taxes): one page for them, added with <code>SettingsTabs::page()</code>, which its tabs join by its key.</li></ul><p>A tab registered without a page becomes an item of its own in the side menu.</p>'),
+            B::code(<<<'PHP'
+SettingsTabs::page('shop', fn (): string => __('Shop'), 'phosphor-storefront');
+
+SettingsTabs::register('shipping', fn (): Tab => Tab::make(__('Shipping'))->schema([...]), page: 'shop');
+SettingsTabs::register('payments', fn (): Tab => Tab::make(__('Payments'))->schema([...]), page: 'shop');
+PHP, 'php', 'app/Providers/AppServiceProvider.php'),
+            B::rich('<h2>Secrets [since 1.3.15]</h2><p>An API key or token editors enter goes in a <code>SecretInput</code>, with its key listed in <code>secretKeys</code>. It\'s stored encrypted and never sent to the browser: the field shows only its last four characters, and saving with the field empty keeps it. It\'s never public, even when listed in <code>publicKeys</code>. Read it with <code>SettingSecrets::get()</code>. A plain text field would send the value to the browser with the form.</p>'),
+            B::code(<<<'PHP'
+use Aurora\Filament\Forms\Components\SecretInput;
+use Aurora\Support\SettingSecrets;
+
+SettingsTabs::register('mailchimp', fn (): Tab => Tab::make(__('Mailchimp'))->schema([
+    SecretInput::make('mailchimp_api_key')->label(__('API key')),
+    TextInput::make('mailchimp_audience')->label(__('Audience ID')),
+]), page: 'integrations', secretKeys: ['mailchimp_api_key']);
+
+// Where it's used:
+$key = SettingSecrets::get('mailchimp_api_key');
+PHP, 'php', 'app/Providers/AppServiceProvider.php'),
         ]);
     }
 

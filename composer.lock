@@ -7558,16 +7558,16 @@
         },
         {
             "name": "shipaurora/cms",
-            "version": "v1.3.14",
+            "version": "v1.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipaurora/cms.git",
-                "reference": "7527f6278b3145c4a4cf6fffb30e6208f966e4bd"
+                "reference": "6665aaf60bf5f9cda313d20e51788f81f71b6cfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipaurora/cms/zipball/7527f6278b3145c4a4cf6fffb30e6208f966e4bd",
-                "reference": "7527f6278b3145c4a4cf6fffb30e6208f966e4bd",
+                "url": "https://api.github.com/repos/shipaurora/cms/zipball/6665aaf60bf5f9cda313d20e51788f81f71b6cfb",
+                "reference": "6665aaf60bf5f9cda313d20e51788f81f71b6cfb",
                 "shasum": ""
             },
             "require": {
@@ -7670,7 +7670,7 @@
                 "issues": "https://github.com/shipaurora/cms/issues",
                 "source": "https://github.com/shipaurora/cms"
             },
-            "time": "2026-10-29T11:37:34+00:00"
+            "time": "2026-10-29T12:18:25+00:00"
         },
         {
             "name": "shipaurora/minimal",
