@@ -34,7 +34,7 @@ class SettingsSeeder extends Seeder
             'rest_api' => ['enabled' => true, 'requires_key' => true],
             'announcement' => [
                 'enabled' => true,
-                'text' => 'Aurora 1.4 is out!',
+                'text' => 'Aurora 1.5 is out!',
                 'link_label' => 'What\'s new',
                 'url' => '/release-notes',
             ],

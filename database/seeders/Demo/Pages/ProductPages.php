@@ -16,7 +16,7 @@ trait ProductPages
             ['type' => 'hero', 'data' => [
                 'layout' => 'centered',
                 'badge' => 'New',
-                'badge_text' => 'Aurora 1.4 is out',
+                'badge_text' => 'Aurora 1.5 is out',
                 'headline' => 'The CMS your editors *enjoy* and your developers trust',
                 'subheadline' => "Aurora is a content management system for Laravel, built on Filament.\nEditors compose pages visually on the real design. Developers keep plain Laravel. AI assistants work with exactly the permissions of the person using them.",
                 'primary_label' => 'Read the docs',
@@ -238,6 +238,13 @@ trait ProductPages
             B::band([
                 B::heading('Release notes', 'What\'s new', 'What changed in each version of Aurora.', 'xl', 'left', 'h1'),
             ], 'brand-soft', 'lg', 'narrow'),
+            B::band([
+                B::heading('Aurora 1.5', 'October 2026', 'Page templates: pages new pages start from, designed in the visual editor and offered in New page.', 'md', 'left', 'h2'),
+                B::rich('<h3>Upgrading from 1.4</h3><p>One migration adds the page templates\' columns to the pages table; until it has run, the site works as before, without templates. Then create the new permission, and give it to the people who design templates under Users &amp; roles.</p>'),
+                B::code("composer update shipaurora/cms\nphp artisan migrate                 # pages.is_template and pages.template_id\nphp artisan aurora:sync-permissions  # \"Manage page templates\"\nphp artisan boost:update             # the updated Aurora skills", 'bash'),
+                B::rich('<h3>What\'s new</h3><ul><li><strong>Page templates</strong>: a page template is a layout and blocks, ready to fill in, that new pages can start from. <em>New page</em> offers <em>Blank</em> and the site\'s templates, and the new page gets a copy of the template\'s layout, the layout\'s fields, its blocks and their translations. Templates are made under Settings › Templates › Page templates or from a page (<em>Save as page template</em>), designed in the visual editor, and never on the website. See <em>Pages</em>.</li><li><strong>A permission</strong>, <em>Manage page templates</em>, for making, changing and deleting them; no role has it until it\'s given.</li><li><strong>Start from</strong> another page now keeps the blocks\' translations too.</li><li><strong>For developers</strong>: templates are <code>Aurora\\Models\\PageTemplate</code>, in the pages table, and <code>Page</code> never returns one; <code>Aurora\\Support\\PageTemplates</code> makes them and copies their content.</li></ul>'),
+                $this->seeAlso(['pages' => 'Pages', 'visual-editor' => 'The visual editor']),
+            ], 'white', 'lg', 'narrow'),
             B::band([
                 B::heading('Aurora 1.4', 'October 2026', 'Pages found by their whole address, redirects that never go round in a circle, and permissions and AI tools of a website\'s own.', 'md', 'left', 'h2'),
                 B::rich('<h3>Upgrading from 1.3</h3><p>There are no migrations. Update the CMS and the skills your AI coding assistant reads. A website that registers permissions of its own creates them with <code>aurora:sync-permissions</code>, after every deploy that adds some.</p>'),
