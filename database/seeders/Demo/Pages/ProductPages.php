@@ -16,7 +16,7 @@ trait ProductPages
             ['type' => 'hero', 'data' => [
                 'layout' => 'centered',
                 'badge' => 'New',
-                'badge_text' => 'Aurora 1.3 is out',
+                'badge_text' => 'Aurora 1.4 is out',
                 'headline' => 'The CMS your editors *enjoy* and your developers trust',
                 'subheadline' => "Aurora is a content management system for Laravel, built on Filament.\nEditors compose pages visually on the real design. Developers keep plain Laravel. AI assistants work with exactly the permissions of the person using them.",
                 'primary_label' => 'Read the docs',
@@ -238,6 +238,13 @@ trait ProductPages
             B::band([
                 B::heading('Release notes', 'What\'s new', 'What changed in each version of Aurora.', 'xl', 'left', 'h1'),
             ], 'brand-soft', 'lg', 'narrow'),
+            B::band([
+                B::heading('Aurora 1.4', 'October 2026', 'Pages found by their whole address, redirects that never go round in a circle, and permissions and AI tools of a website\'s own.', 'md', 'left', 'h2'),
+                B::rich('<h3>Upgrading from 1.3</h3><p>There are no migrations. Update the CMS and the skills your AI coding assistant reads. A website that registers permissions of its own creates them with <code>aurora:sync-permissions</code>, after every deploy that adds some.</p>'),
+                B::code("composer update shipaurora/cms\nphp artisan boost:update             # the updated Aurora skills\nphp artisan aurora:sync-permissions  # the website's own permissions, if it has any", 'bash'),
+                B::rich('<h3>What\'s new</h3><ul><li><strong>Addresses</strong>: a page is found by its whole address, part by part, so pages in different places may share a slug (<code>/services/design</code> and <code>/work/design</code>). Only pages beside each other need different ones. See <em>Pages</em>.</li><li><strong>Redirects never go round in a circle</strong>: one that would send visitors back to an address on their way isn\'t saved, and one that comes to loop later isn\'t followed. See <em>Menus, redirects and trash</em>.</li><li><strong>Permissions and policies</strong>: <code>Permissions::register()</code> adds a website\'s own permissions to Users &amp; roles, for its policies to check; <code>aurora:sync-permissions</code> creates them on a running site. See <em>Your own screens and models</em>.</li><li><strong>AI tools of your own</strong>: <code>McpTools::register()</code> adds a website\'s own tools to the MCP server and the assistant in the admin. AI apps now name a page by its id or its whole address.</li></ul><h3>What may look different</h3><p>Code that looked a page up by its slug alone needs a look; nothing else does.</p><table><tr><th>What</th><th>Before</th><th>Now</th></tr><tr><td>Two pages with the same slug</td><td>Not allowed anywhere on a site</td><td>Allowed under different parents; still not beside each other</td></tr><tr><td>An old address ending in a slug several pages share</td><td>Sent on to one of them</td><td>"Page not found", unless a redirect says where it goes</td></tr><tr><td>A page named by its slug to an AI app</td><td>The first page with that slug</td><td>The page with that id or whole address; a slug several pages share is asked about</td></tr><tr><td>A redirect that loops</td><td>Saved, and visitors sent round and round</td><td>Refused when saved; one that loops later answers "Page not found"</td></tr><tr><td><code>Page::query()->whereSlug()</code> in a website\'s own code</td><td>One page</td><td>Possibly several: use <code>Page::findByPath()</code></td></tr></table>'),
+                $this->seeAlso(['pages' => 'Pages', 'menus-redirects-trash' => 'Menus, redirects and trash', 'website-screens' => 'Your own screens and models']),
+            ], 'white', 'lg', 'narrow'),
             B::band([
                 B::heading('Aurora 1.3', 'October 2026', 'Block screenshots from the site\'s own files, made from each block\'s example data, and skills for AI coding assistants that cover a whole website, including moving an existing one onto Aurora. No breaking API changes.', 'md', 'left', 'h2'),
                 B::rich('<h3>Upgrading from 1.2</h3><p>There are no migrations. Update the CMS, then the skills your AI coding assistant reads (the starter app does this on every <code>composer update</code>).</p>'),
