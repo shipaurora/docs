@@ -483,11 +483,12 @@ class PageSeeder extends Seeder
             AssetLibrary::fromFile(__DIR__.'/files/'.$file, ['title' => $title, 'folder' => 'Documents']);
         }
 
+        // A tag may be there already: with the assistant tagging images (Settings › AI Assistant),
+        // the queue tags the images above while the rest are still being added.
         foreach (self::TAGS as $name => [$color, $images]) {
-            AssetTag::query()
-                ->create(['name' => $name, 'color' => $color])
-                ->assets()
-                ->attach(array_map(fn (string $image): string => $this->assets['demo/'.$image.'.jpg'], $images));
+            $tag = AssetTag::query()->firstOrCreate(['name' => $name], ['color' => $color]);
+            $tag->update(['color' => $color]);
+            $tag->assets()->syncWithoutDetaching(array_map(fn (string $image): string => $this->assets['demo/'.$image.'.jpg'], $images));
         }
     }
 
